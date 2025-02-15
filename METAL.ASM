@@ -432,12 +432,12 @@ tilefilenameD   db   "fmj5d   .til",0
 ;; file name table
 filename02      db   "fmj.pal",0
 filename03      db   "record.sav",0
-filename04      db   "mire.fli",0
-filename041     db   "title.dat",0
-filename051     db   "fmjopen1.fli",0
-filename052     db   "fmjopen2.fli",0
-filename053     db   "fmjopen3.fli",0
-filename054     db   "fmjopen4.fli",0
+filename04      db   "intro/mire.fli",0
+filename041     db   "intro/title.dat",0
+filename051     db   "intro/fmjopen1.fli",0
+filename052     db   "intro/fmjopen2.fli",0
+filename053     db   "intro/fmjopen3.fli",0
+filename054     db   "intro/fmjopen4.fli",0
 filename06      db   "tit-end.GRP",0
 filename07      db   "credit.GRP",0
 filename08      db   "end1.dat",0
@@ -448,25 +448,25 @@ SONG    label   dword
 	dd      SONG06,SONG07,SONG08,SONG09,SONG10
 	dd      SONG11,SONG12,SONG13,SONG14,SONG15
 
-SONG_OPEN       db   "fm001.mod",0   ;
-SONG_MENU       db   "fm017.mod",0   ;
-SONG_END        db   "fm015.mod",0  ;
+SONG_OPEN       db   "music/fm001.mod",0   ;
+SONG_MENU       db   "music/fm017.mod",0   ;
+SONG_END        db   "music/fm015.mod",0  ;
 
-SONG01          db   "fm002.mod",0   ; 1 desert
-SONG02          db   "fm000.mod",0   ; 2 jungle
-SONG03          db   "fm003.mod",0   ; 3 desert
-SONG04          db   "fm004.mod",0   ; 4
-SONG05          db   "fm008.mod",0   ; 5 iceland
-SONG06          db   "fm005.mod",0   ; 6 jungle
-SONG07          db   "fm007.mod",0   ; 7
-SONG08          db   "fm010.mod",0   ; 8 desert
-SONG09          db   "fm008.mod",0   ; 9 iceland
-SONG10          db   "fm013.mod",0   ;10 jungle
-SONG11          db   "fm008.mod",0   ;11 iceland
-SONG12          db   "fm002.mod",0   ;12 desert
-SONG13          db   "fm014.mod",0   ;13
-SONG14          db   "fm018.mod",0   ;14
-SONG15          db   "fm101.mod",0   ;15
+SONG01          db   "music/fm002.mod",0   ; 1 desert
+SONG02          db   "music/fm000.mod",0   ; 2 jungle
+SONG03          db   "music/fm003.mod",0   ; 3 desert
+SONG04          db   "music/fm004.mod",0   ; 4
+SONG05          db   "music/fm008.mod",0   ; 5 iceland
+SONG06          db   "music/fm005.mod",0   ; 6 jungle
+SONG07          db   "music/fm007.mod",0   ; 7
+SONG08          db   "music/fm010.mod",0   ; 8 desert
+SONG09          db   "music/fm008.mod",0   ; 9 iceland
+SONG10          db   "music/fm013.mod",0   ;10 jungle
+SONG11          db   "music/fm008.mod",0   ;11 iceland
+SONG12          db   "music/fm002.mod",0   ;12 desert
+SONG13          db   "music/fm014.mod",0   ;13
+SONG14          db   "music/fm018.mod",0   ;14
+SONG15          db   "music/fm101.mod",0   ;15
 
 TITLES          db   "FULL METAL JACKET 1.0",0
 TARGETS         db   "TARGETS DETECTED",0

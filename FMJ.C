@@ -56,26 +56,27 @@ extern  Module * SONGptr_;
 int SOUND;
 int channel = 4;
 
-unsigned char *wavfn[MAXFX] ={"fmj01.wav",   // 0  _VALCAN_
-			  "fmj02.wav",       // 1  _DING_
-			  "fmj03.wav",       // 2  _EXPLO0_
-			  "click3.wav",      // 3  _ARROW_
-			  "click10.wav",     // 4  _ESC_
-			  "sfx01.wav",       // 5  _ENTER_
-			  "siren1.wav",      // 6  _SIREN_
-			  "band.wav",        // 7  _BAND_
-			  "sld.wav",         // 8  _SLD_
-			  "gundry.wav",      // 9  _GUNDRY_
-			  "explo1.wav",      // 10 _EXPLO1_
-			  "explo2.wav",      // 11  _EXPLO2_
-			  "sgunsh.wav",      // 12  _SGUNSH_
-			  "sgunac.wav",      // 13  _SGUNAC_
-			  "cannon.wav",      // 14  _CANNON_
-			  "fthrow.wav",      // 15  _FTHROW_
-			  "mchgun.wav",      // 16  _MGUN_
-			  "drop.wav",        // 17  _DROP_
-			  "buston.wav",      // 18  _BUSTON_
-			  "bust.wav"};       // 19  _BUST_
+unsigned char *wavfn[MAXFX] ={
+			  "sounds/fmj01.wav",   // 0  _VALCAN_
+			  "sounds/fmj02.wav",       // 1  _DING_
+			  "sounds/fmj03.wav",       // 2  _EXPLO0_
+			  "sounds/click3.wav",      // 3  _ARROW_
+			  "sounds/click10.wav",     // 4  _ESC_
+			  "sounds/sfx01.wav",       // 5  _ENTER_
+			  "sounds/siren1.wav",      // 6  _SIREN_
+			  "sounds/band.wav",        // 7  _BAND_
+			  "sounds/sld.wav",         // 8  _SLD_
+			  "sounds/gundry.wav",      // 9  _GUNDRY_
+			  "sounds/explo1.wav",      // 10 _EXPLO1_
+			  "sounds/explo2.wav",      // 11  _EXPLO2_
+			  "sounds/sgunsh.wav",      // 12  _SGUNSH_
+			  "sounds/sgunac.wav",      // 13  _SGUNAC_
+			  "sounds/cannon.wav",      // 14  _CANNON_
+			  "sounds/fthrow.wav",      // 15  _FTHROW_
+			  "sounds/mchgun.wav",      // 16  _MGUN_
+			  "sounds/drop.wav",        // 17  _DROP_
+			  "sounds/buston.wav",      // 18  _BUSTON_
+			  "sounds/bust.wav"};       // 19  _BUST_
 
 Sample *FX[MAXFX];
 word Port;
