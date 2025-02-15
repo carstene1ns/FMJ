@@ -269,7 +269,7 @@ main(int argc, char *argv[])
 
     LoadCFG();
 
-    Loadconfig();
+    LoadConfig();
 /*
     if ( check_CD() != 0 ) printf("F.M.J. CD found\n");
     else {
