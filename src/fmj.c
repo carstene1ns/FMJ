@@ -23,19 +23,6 @@ struct config_data {
 		short dummy2;
 }config = {0,0x220,5,1,0,0};
 
-static struct rminfo {
-    long EDI;
-    long ESI;
-    long EBP;
-    long reserved_by_system;
-    long EBX;
-    long EDX;
-    long ECX;
-    long EAX;
-    short flags;
-    short ES,DS,FS,GS,IP,CS,SP,SS;
-} RMI;
-
 extern  int mission_no;
 extern  int replay;
 extern  int startASM(void);
@@ -49,7 +36,6 @@ extern  int MusicAdjust;                    // 음악 조절 변수.(외부에�
 
 extern	void vid_mode(int);
 
-unsigned curdisk, CD_disk, drives;
 void SoundFX(unsigned number);
 extern  Module * SONGptr_;
 
@@ -183,72 +169,6 @@ PlayBGM(Module *Modulefile)
 	MODPlayModule(Modulefile,8,11111,Port,IRQ,DRQ,PM_TIMER);
 }
 
-int check_CD(void)
-{
-    union REGS regs;
-    struct SREGS sregs;
-    int interrupt_no=0x31;
-    short selector;
-    short segment;
-    char *str;
-
-    /* DPMI call 100h allocates DOS memory */
-    memset(&sregs,0,sizeof(sregs));
-    regs.w.ax=0x0100;
-    regs.w.bx=0x0003;    // 16 * 3 = 48 bytes
-    int386x( interrupt_no, &regs, &regs, &sregs);
-    segment=regs.w.ax;
-    selector=regs.w.dx;
-
-    /* make linear address */
-    str = (char *)(((long)segment) << 4);
-
-    /* Set up real-mode call structure */
-    memset(&RMI,0,sizeof(RMI));
-    RMI.EAX=0x00001500; /* CD-ROM installation check ax=1500 */
-    RMI.EBX=0;
-
-    /* Use DMPI call 300h to issue the DOS interrupt */
-    regs.w.ax = 0x0300;
-    regs.h.bl = 0x2F;
-    regs.h.bh = 0;
-    regs.w.cx = 0;
-    sregs.es = FP_SEG(&RMI);
-    regs.x.edi = FP_OFF(&RMI);
-    int386x( interrupt_no, &regs, &regs, &sregs );
-
-    if ( regs.w.cflag ) printf("CD-ROM function call failed\n");
-
-    if ( !RMI.EBX ) printf("CD-ROM drive not installed\n");
-    else printf("CD-ROM drive is %c:\n", 'A'+ (unsigned char)RMI.ECX );
-
-    CD_disk = RMI.ECX;
-
-    /* Set up real-mode call structure */
-    memset(&RMI,0,sizeof(RMI));
-    RMI.EAX=0x00001502; /* call service ax=1502 */
-    RMI.ES=segment;     /* put DOS seg:off into ES:BX*/
-    RMI.EBX=0;          /* DOS ignores EBX high word */
-    RMI.ECX=CD_disk;    /* drive number */
-
-    /* Use DMPI call 300h to issue the DOS interrupt */
-    regs.w.ax = 0x0300;
-    regs.h.bl = 0x2F;
-    regs.h.bh = 0;
-    regs.w.cx = 0;
-    sregs.es = FP_SEG(&RMI);
-    regs.x.edi = FP_OFF(&RMI);
-    int386x( interrupt_no, &regs, &regs, &sregs );
-    if ( regs.w.cflag ) printf("CD-ROM function call failed\n");
-    if ( RMI.flags & 0x01 ) printf("not CD-ROM\n");
-//    printf("   Copyright:");
-//    printf(str); printf("\n");
-    if ( strcmp(str,"FMJ102C") != 0 ) return -1;
-
-    return 0;
-
-}
-
 main(int argc, char *argv[])
 {
     Module *Song;
@@ -271,14 +191,7 @@ main(int argc, char *argv[])
     LoadCFG();
 
     LoadConfig();
-/*
-    if ( check_CD() != 0 ) printf("F.M.J. CD found\n");
-    else {
-	printf("F.M.J. CD not found\n");
-	printf("Insert F.M.J. CD in the CD-ROM drive!!\n");
-	exit(1);
-    }
-*/
+
     switch(config.sound_card) {
 
 	case 0 :
