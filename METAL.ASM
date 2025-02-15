@@ -251,11 +251,11 @@ extrn   _FirstMission:dword   ;
 
 extrn   _FMJTotalScore:dword            ;16000
 
-extrn   _ResolutionAdjust:dword;               // ÇØ»óµµ Á¶Àı º¯¼ö.(¿ÜºÎ¿¡¼­ »ç¿ëÇÔ)
-extrn   _ScreenSizeAdjust:dword;               // È­¸é Å©±â Á¶Àı º¯¼ö.(¿ÜºÎ¿¡¼­ »ç¿ëÇÔ)
-extrn   _BrightAdjust:dword;                   // ¹à±â Á¶Àı º¯¼ö.(¿ÜºÎ¿¡¼­ »ç¿ëÇÔ)
-extrn   _EffectAdjust:dword;                   // È¿°úÀ½ Á¶Àı º¯¼ö.(¿ÜºÎ¿¡¼­ »ç¿ëÇÔ)
-extrn   _MusicAdjust:dword;                    // À½¾Ç Á¶Àı º¯¼ö.(¿ÜºÎ¿¡¼­ »ç¿ëÇÔ)
+extrn   _ResolutionAdjust:dword;               // í•´ìƒë„ ì¡°ì ˆ ë³€ìˆ˜.(ì™¸ë¶€ì—ì„œ ì‚¬ìš©í•¨)
+extrn   _ScreenSizeAdjust:dword;               // í™”ë©´ í¬ê¸° ì¡°ì ˆ ë³€ìˆ˜.(ì™¸ë¶€ì—ì„œ ì‚¬ìš©í•¨)
+extrn   _BrightAdjust:dword;                   // ë°ê¸° ì¡°ì ˆ ë³€ìˆ˜.(ì™¸ë¶€ì—ì„œ ì‚¬ìš©í•¨)
+extrn   _EffectAdjust:dword;                   // íš¨ê³¼ìŒ ì¡°ì ˆ ë³€ìˆ˜.(ì™¸ë¶€ì—ì„œ ì‚¬ìš©í•¨)
+extrn   _MusicAdjust:dword;                    // ìŒì•… ì¡°ì ˆ ë³€ìˆ˜.(ì™¸ë¶€ì—ì„œ ì‚¬ìš©í•¨)
 
 _BSS    ENDS
 

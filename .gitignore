@@ -1,0 +1,14 @@
+
+# tasm and wcc error files
+*.[Ee][Rr][Rr]
+
+# objects
+*.[Oo]
+*.[Oo][Bb][Jj]
+
+# game files
+*.[Cc][Ff][Gg]
+*.[Ss][Aa][Vv]
+
+# executables
+*.[Ee][Xx][Ee]

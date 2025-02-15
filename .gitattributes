@@ -1,0 +1,14 @@
+# normalize text
+* text=auto
+
+# NOTE: brackets are used for case-insensitive matching
+*.[Tt][Xx][Tt] text
+*.md text
+
+# special cases: dos
+*.[Cc] text eol=crlf
+*.[Hh] text eol=crlf
+*.[Aa][Ss][Hh] text eol=crlf
+*.[Aa][Ss][Mm] text eol=crlf
+*.[Ii][Nn][Cc] text eol=crlf
+*.[Ii][Nn][Ii] text eol=crlf
