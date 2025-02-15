@@ -5,6 +5,9 @@
 # objects
 *.[Oo]
 *.[Oo][Bb][Jj]
+# game data
+!src/main_dat.obj
+!src/en_dat.obj
 
 # game files
 *.[Cc][Ff][Gg]
@@ -12,3 +15,5 @@
 
 # executables
 *.[Ee][Xx][Ee]
+# legacy executables
+!legacy/*.exe

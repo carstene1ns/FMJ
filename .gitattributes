@@ -6,9 +6,9 @@
 *.md text
 
 # special cases: dos
-*.[Cc] text eol=crlf
-*.[Hh] text eol=crlf
-*.[Aa][Ss][Hh] text eol=crlf
-*.[Aa][Ss][Mm] text eol=crlf
-*.[Ii][Nn][Cc] text eol=crlf
+*.c text eol=crlf
+*.h text eol=crlf
+*.ash text eol=crlf
+*.asm text eol=crlf
+*.inc text eol=crlf
 *.[Ii][Nn][Ii] text eol=crlf
