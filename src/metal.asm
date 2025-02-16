@@ -18,7 +18,7 @@
 	LOCALS
 
 	include keyscan.inc             ; keyboard scan code defnition
-	include VGA.INC                 ; VGA register and etc..
+	include vga.inc                 ; VGA register and etc..
 
 _GOTO           equ     230
 DSPEED          equ     5
@@ -192,9 +192,9 @@ PUBLIC  _XC_
 PUBLIC  _YC_
 PUBLIC  _SONGptr_
 
-	include GRPLIB.ASH              ; graphics lib. header file
-	include FILES.ASH               ; file
-	include FLI.ASH                 ; flic file player
+	include grplib.ash              ; graphics lib. header file
+	include files.ash               ; file
+	include fli.ash                 ; flic file player
 
 _DATA   SEGMENT PUBLIC USE32 DWORD 'DATA'
 

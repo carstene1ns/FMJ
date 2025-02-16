@@ -8,7 +8,7 @@ COPT=-3r -d0 -zq -mf -oacilrt -s -bt=dos -iinc
 LOPT=SYS dos4g OP QUIET
 AOPT=-m -n -zn -z -q -ml -p -t -jsmart -iinc
 OBJ=fmj.obj metal.obj files.obj fmjmenu.obj &
-    modload.obj modplay.obj grplib.obj sprite.obj fli.obj rotate.obj
+    modload.obj modplay.obj grplib.obj sprite.obj fli.obj
 DATAOBJ=\src\MAIN_DAT.OBJ \src\EN_DAT.OBJ
 
 fmj.exe: $(OBJ) 

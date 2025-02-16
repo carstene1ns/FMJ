@@ -169,7 +169,7 @@ PlayBGM(Module *Modulefile)
 	MODPlayModule(Modulefile,8,11111,Port,IRQ,DRQ,PM_TIMER);
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     Module *Song;
     int i;
@@ -253,5 +253,5 @@ main(int argc, char *argv[])
     SaveCFG();
     printf("\nThanks for playing FULL METAL JACKET Version 1.02e \n");
 
+    return 0;
 }
-
