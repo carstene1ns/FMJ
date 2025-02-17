@@ -19,8 +19,6 @@ PUBLIC	GAMMA
 PUBLIC	gammano
 PUBLIC	pcxfilename
 
-include	files.ash
-
 ; Real Mode Interrupt information structure
 RMInfo	struc
 	_EDI		dd	0;
@@ -121,6 +119,9 @@ _BSS	ENDS
 
 _TEXT   SEGMENT PUBLIC USE32 DWORD 'CODE'
 	ASSUME  cs:_TEXT,ds:DGROUP,es:DGROUP
+
+extrn   load_file_  : near
+extrn   save_file_  : near
 
 ;-----------------------------
 ; video mode setting
@@ -601,17 +602,17 @@ put_pixel	PROC
 put_pixel	ENDP
 
 ;-------------------------------------
-; esi : file name ( no header )
+; eax : file name ( no header )
 ; using in MCGA mode
 ;-------------------------------------
 PUBLIC	load_put_PCX
 load_put_PCX    PROC
 
 loading:
-	mov	edi,OFFSET pcx_buffer
-	push	edi
-	mov     ecx,64000
-	call    load_file
+	mov	edx,OFFSET pcx_buffer
+	push	edx
+	mov     ebx,64000
+	call    load_file_
 
 encoding:
 	pop	esi
@@ -664,16 +665,16 @@ encoding:
 load_put_PCX    ENDP
 
 ;-------------------------------------
-; esi : file name ( no header )
+; eax : file name ( no header )
 ; using in X mode
 ;-------------------------------------
 PUBLIC	load_put_PCXX
 load_put_PCXX	PROC
 
-	mov	edi,OFFSET decoding
-	push	edi
-	mov     ecx,64000
-	call    load_file
+	mov	edx,OFFSET decoding
+	push	edx
+	mov     ebx,64000
+	call    load_file_
 
 	pop	esi
 	mov     edi,OFFSET pcx_buffer
@@ -800,7 +801,7 @@ put_pic PROC
 put_pic ENDP
 
 ;-------------------------------------
-; esi : file name ( no header )
+; eax : file name ( no header )
 ; using in MCGA mode
 ;-------------------------------------
 PUBLIC	decoding_PCX
@@ -968,11 +969,10 @@ decoding_PCX    PROC
 	sub	edi,OFFSET decoding
 	add	edi,128
 
-	mov	ecx,edi
-
-	mov	esi,OFFSET PCXHDR
-	mov	edi,OFFSET pcxfilename
-	call	save_file
+	mov	eax,OFFSET pcxfilename
+	mov	edx,OFFSET PCXHDR
+	mov	ebx,edi
+	call	save_file_
 
 	popad
 

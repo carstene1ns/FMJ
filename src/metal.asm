@@ -193,7 +193,6 @@ PUBLIC  _YC_
 PUBLIC  _SONGptr_
 
 	include grplib.ash              ; graphics lib. header file
-	include files.ash               ; file
 	include fli.ash                 ; flic file player
 
 _DATA   SEGMENT PUBLIC USE32 DWORD 'DATA'
@@ -381,47 +380,47 @@ enemy_score     dw   0
 BONUS           dw   600,700,800,850,900,1200,1250,1350,1400,1500
 		dw   1600,1700,2000,2000,0
 
-mapfilename     db   "fmjk1   .map",0     ;0
-		db   "fmjk2   .map",0     ;1
-		db   "fmjk3   .map",0     ;2
-		db   "fmjk4   .map",0     ;3
-		db   "fmjk5   .map",0     ;4
-		db   "fmjk6   .map",0     ;5
-		db   "fmjk7   .map",0     ;6
-		db   "fmjk8   .map",0     ;7
-		db   "fmjk9   .map",0     ;8
-		db   "fmjk10  .map",0     ;9
-		db   "fmjk11  .map",0     ;10
-		db   "fmjk12  .map",0     ;11
-		db   "fmjk13  .map",0     ;12
-		db   "fmjk14  .map",0     ;13
-		db   "fmjk15  .map",0     ;14
+mapfilename     db   "fmjk1.map",0,0,0,0     ;0
+		db   "fmjk2.map",0,0,0,0     ;1
+		db   "fmjk3.map",0,0,0,0     ;2
+		db   "fmjk4.map",0,0,0,0     ;3
+		db   "fmjk5.map",0,0,0,0     ;4
+		db   "fmjk6.map",0,0,0,0     ;5
+		db   "fmjk7.map",0,0,0,0     ;6
+		db   "fmjk8.map",0,0,0,0     ;7
+		db   "fmjk9.map",0,0,0,0     ;8
+		db   "fmjk10.map",0,0,0      ;9
+		db   "fmjk11.map",0,0,0      ;10
+		db   "fmjk12.map",0,0,0      ;11
+		db   "fmjk13.map",0,0,0      ;12
+		db   "fmjk14.map",0,0,0      ;13
+		db   "fmjk15.map",0,0,0      ;14
 
-tilefilename    db   "fmj5    .til",0     ;0
-		db   "fmj6    .til",0     ;1
-		db   "fmj7    .til",0     ;2
-		db   "fmj8    .til",0     ;3
-		db   "fmj9    .til",0     ;4
-		db   "fmj10   .til",0     ;5
-		db   "fmje1   .til",0     ;6
-		db   "fmjx1   .til",0     ;7
-		db   "fmj2-2  .til",0     ;8
-		db   "fmje2   .til",0     ;9
-		db   "fmje2   .til",0     ;10
-		db   "fmje2   .til",0     ;11
-		db   "fmje4   .til",0     ;12
-		db   "fmje4   .til",0     ;13
-		db   "fmje4   .til",0     ;14
+tilefilename    db   "fmj5.til",0,0,0,0,0     ;0
+		db   "fmj6.til",0,0,0,0,0     ;1
+		db   "fmj7.til",0,0,0,0,0     ;2
+		db   "fmj8.til",0,0,0,0,0     ;3
+		db   "fmj9.til",0,0,0,0,0     ;4
+		db   "fmj10.til",0,0,0,0      ;5
+		db   "fmje1.til",0,0,0,0      ;6
+		db   "fmjx1.til",0,0,0,0      ;7
+		db   "fmj2-2.til",0,0,0       ;8
+		db   "fmje2.til",0,0,0,0      ;9
+		db   "fmje2.til",0,0,0,0      ;10
+		db   "fmje2.til",0,0,0,0      ;11
+		db   "fmje4.til",0,0,0,0      ;12
+		db   "fmje4.til",0,0,0,0      ;13
+		db   "fmje4.til",0,0,0,0      ;14
 
-tilefilenameD   db   "fmj5d   .til",0
-		db   "fmj6d   .til",0
-		db   "fmj7d   .til",0
-		db   "fmj8d   .til",0
-		db   "fmj9d   .til",0
-		db   "fmj10d  .til",0
-		db   "fmje1d  .til",0
-		db   "fmjx1d  .til",0
-		db   "fmj2-2d .til",0
+tilefilenameD   db   "fmj5d.til",0,0,0,0
+		db   "fmj6d.til",0,0,0,0
+		db   "fmj7d.til",0,0,0,0
+		db   "fmj8d.til",0,0,0,0
+		db   "fmj9d.til",0,0,0,0
+		db   "fmj10d.til",0,0,0
+		db   "fmje1d.til",0,0,0
+		db   "fmjx1d.til",0,0,0
+		db   "fmj2-2d.til",0,0
 		db   "fmje2-d1.til",0
 		db   "fmje2-d1.til",0
 		db   "fmje2-d1.til",0
@@ -438,8 +437,8 @@ filename051     db   "intro/fmjopen1.fli",0
 filename052     db   "intro/fmjopen2.fli",0
 filename053     db   "intro/fmjopen3.fli",0
 filename054     db   "intro/fmjopen4.fli",0
-filename06      db   "tit-end.GRP",0
-filename07      db   "credit.GRP",0
+filename06      db   "tit-end.grp",0
+filename07      db   "credit.grp",0
 filename08      db   "end1.dat",0
 filename09      db   "end2.dat",0   ; password image data
 
@@ -494,6 +493,8 @@ DANGER          db   "DANGER",0
 ROUNDS          db   "R:",0
 BU              db   "BU:",0
 PW              db   "PW:",0
+
+FILE_READ       db   "rb",0
 
 align 4
 ;; function table
@@ -935,6 +936,15 @@ extrn   _MODSetMusicVolume: near        ; C stack call ( byte volume )
 extrn   _MODSetSampleVolume: near       ; C stack call ( byte volume )
 extrn   _InstallTimer:  near            ; C stack call ( no parameter )
 extrn   _DeinstallTimer:near            ; C stack call ( no parameter )
+
+extrn   open_file_  : near              ; C register call
+extrn   close_file_ : near              ; C register call
+extrn   read_file_  : near              ; C register call
+extrn   write_file_ : near              ; C register call
+extrn   move_file_pointer_: near        ; C register call
+extrn   load_file_  : near              ; C register call
+extrn   save_file_  : near              ; C register call
+extrn   exists_file_: near              ; C register call
 
 extrn   itoa_:          near            ; C std. LIB function
 
@@ -5489,60 +5499,64 @@ draw_map        ENDP
 ;--------------------------------------
 mission_load    PROC
 
-	mov     esi,offset tilefilename
-	mov     eax,_mission_no
-	dec     eax
-	mov     eax,mission_number[eax*4]            ;;;;
-	imul    eax,13
-	add     esi,eax
-	mov     al,0
-	call    open_file
+	mov     eax,offset tilefilename
+	mov     esi,_mission_no
+	dec     esi
+	mov     esi,mission_number[esi*4]            ;;;;
+	imul    esi,13
+	add     eax,esi
+	mov     edx,offset FILE_READ
+	call    open_file_
 	push    eax
-	mov     edi,offset TIL_load
-	mov     ecx,12+768
-	call    read_file  ;;;;;
 
-	pop     ebx
-	push    ebx
-	mov     al,1
-	mov     ecx,12000
-	call    move_file_pointer
+	mov     edx,offset TIL_load
+	mov     ebx,12+768
+	call    read_file_  ;;;;;
 
 	pop     eax
 	push    eax
-	mov     edi,offset TIL
-	mov     ecx,64*3000
-	call    read_file  ;;;;;
+
+	mov     edx,12000
+	mov     ebx,1
+	call    move_file_pointer_
 
 	pop     eax
-	call    close_file
+	push    eax
+
+	mov     edx,offset TIL
+	mov     ebx,64*3000
+	call    read_file_  ;;;;;
+
+	pop     eax
+	call    close_file_
 
 ;       mov     edi,offset TIL_load
 ;       mov     ecx,12+768+12000+64*3000
 ;       call    load_file
 
-	mov     esi,offset tilefilenameD
-	mov     eax,_mission_no
-	dec     eax
-	mov     eax,mission_number[eax*4]            ;;;;
-	imul    eax,13
-	add     esi,eax
-	mov     al,0
-	call    open_file
-	mov     ebx,eax
+	mov     eax,offset tilefilenameD
+	mov     esi,_mission_no
+	dec     esi
+	mov     esi,mission_number[esi*4]            ;;;;
+	imul    esi,13
+	add     eax,esi
+	mov     edx,offset FILE_READ
+	call    open_file_
 	push    eax
-	mov     al,0
-	mov     ecx,12+768+12000
-	call    move_file_pointer
+
+	mov     edx,12+768+12000
+	mov     ebx,1
+	call    move_file_pointer_
 
 	pop     eax
 	push    eax
-	mov     edi,offset DTIL
-	mov     ecx,64*3000
-	call    read_file  ;;;;
+
+	mov     edx,offset DTIL
+	mov     ebx,64*3000
+	call    read_file_  ;;;;
 
 	pop     eax
-	call    close_file
+	call    close_file_
 
 ;       mov     edi,offset DTIL_load
 ;       mov     ecx,12+768+12000+64*3000
@@ -5558,38 +5572,41 @@ mission_load    PROC
 ;       mov     ecx,8 + (256*256*4) + (2898*4)
 ;       call    load_file
 
-	mov     esi,offset mapfilename
-	mov     eax,_mission_no
-	dec     eax
-	mov     eax,mission_number[eax*4]            ;;;;
-	imul    eax,13
-	add     esi,eax
-	mov     al,0
-	call    open_file
+	mov     eax,offset mapfilename
+	mov     esi,_mission_no
+	dec     esi
+	mov     esi,mission_number[esi*4]            ;;;;
+	imul    esi,13
+	add     eax,esi
+	mov     edx,offset FILE_READ
+	call    open_file_
 	push    eax
-	mov     edi,offset MAP_load
-	mov     ecx,8 + (256*256*4) + (18*4)
-	call    read_file  ;;;;
 
-	pop     ebx
-	push    ebx
-	mov     al,1
-	mov     ecx,(30*67*4)
-	call    move_file_pointer
+	mov     edx,offset MAP_load
+	mov     ebx,8 + (256*256*4) + (18*4)
+	call    read_file_  ;;;;
 
 	pop     eax
 	push    eax
-	mov     edi,offset ENINFO
-	mov     ecx,(30*14*4) + (30*15*4)
-	call    read_file   ;;;;
+
+	mov     edx,(30*67*4)
+	mov     ebx,1
+	call    move_file_pointer_
 
 	pop     eax
-	call    close_file
+	push    eax
 
-	mov     esi,offset filename02
-	mov     edi,offset PAL
-	mov     ecx,16 * 3
-	call    load_file
+	mov     edx,offset ENINFO
+	mov     ebx,(30*14*4) + (30*15*4)
+	call    read_file_   ;;;;
+
+	pop     eax
+	call    close_file_
+
+	mov     eax,offset filename02
+	mov     edx,offset PAL
+	mov     ebx,16 * 3
+	call    load_file_
 
 	ret
 
@@ -6435,28 +6452,19 @@ key_input       PROC
 	inc     edi
 
 	mov     byte ptr[edi],'.'
-	mov     byte ptr[edi+1],'P'
-	mov     byte ptr[edi+2],'C'
-	mov     byte ptr[edi+3],'X'
+	mov     byte ptr[edi+1],'p'
+	mov     byte ptr[edi+2],'c'
+	mov     byte ptr[edi+3],'x'
 	mov     byte ptr[edi+4],0
 
-	push    edi
-	mov     ah,3dh                  ; open file
-	mov     al,0                    ; read only
-	mov     edx,OFFSET pcxfilename
-	int     21h
-	pop     edi
-	jc      @@noexit
+	mov     eax,OFFSET pcxfilename
+	call    exists_file_
 
-	mov     bx,ax
-
-	mov     ah,3eh                  ; close
-	int     21h
+	cmp     eax,0
+	je      @@noexit
 
 	inc     ecx
-
 	jmp     @@rename
-
 
 @@noexit:
 	call    decoding_PCX
@@ -6933,14 +6941,14 @@ startASM_       PROC
 
 	cmp     _replay,0
 	jz      @@noload
-	mov     edi,OFFSET _RECORD_
-	mov     esi,OFFSET filename03
-	mov     ecx,RECLEN * 2 + 1 + 11 * 4
-	call    load_file
+
+	mov     eax,OFFSET filename03
+	mov     edx,OFFSET _RECORD_
+	mov     ebx,RECLEN * 2 + 1 + 11 * 4
+	call    load_file_
+
 @@noload:
 
-;	mov     ax,13h
-;	int     10h
 	mov	eax,13h
 	call	vid_mode_
 
@@ -6999,8 +7007,6 @@ startASM_       PROC
 	call    _MODSetMusicVolume
 	pop     eax
 
-;	mov     ax,13h
-;	int     10h
 	mov	eax,13h
 	call	vid_mode_
 
@@ -7029,7 +7035,7 @@ startASM_       PROC
 	;---------
 	; TITLE
 	;---------
-	mov     esi,OFFSET filename06
+	mov     eax,OFFSET filename06
 	call    load_put_PCX
 
 	mov     [_TimerTicks],0
@@ -7247,6 +7253,7 @@ startASM_       PROC
 	call    _MODSetMusicVolume
 	pop     eax
 
+	; get system ticks
 	mov     ah,0
 	int     1Ah
 	mov     word ptr[Tstart+2],cx
@@ -7545,6 +7552,7 @@ startASM_       PROC
 @fine:  ;
 	;
 	;-------------------
+	; get system ticks
 	mov     ah,0
 	int     1Ah
 	mov     word ptr[Tend+2],cx
@@ -7611,17 +7619,17 @@ startASM_       PROC
 
 	call    keyint_off
 
-;	mov     ax,03h
-;	int     10h
 	mov	eax,03h
 	call	vid_mode_
 
 	cmp     _replay,1
 	je      SHORT @@nosave
-	mov     esi,OFFSET _RECORD_
-	mov     edi,OFFSET filename03
-	mov     ecx,RECLEN * 2 + 1 + 11 * 4
-	call    save_file
+
+	mov     eax,OFFSET filename03
+	mov     edx,OFFSET _RECORD_
+	mov     ebx,RECLEN * 2 + 1 + 11 * 4
+	call    save_file_
+
 @@nosave:
 
 	call    _MODStopModule
@@ -7832,10 +7840,10 @@ password        PROC
 	mov     eax,_TimerTicks
 	mov     seed,eax
 
-	mov     esi,OFFSET filename09
-	mov     edi,OFFSET pcx_buffer
-	mov     ecx,16320
-	call    load_file
+	mov     eax,OFFSET filename09
+	mov     edx,OFFSET pcx_buffer
+	mov     ebx,16320
+	call    load_file_
 
 	mov     passtry,3
 
@@ -8086,14 +8094,14 @@ ending  PROC
 	mov     Dbound,199
 
 ;       call    SCROFF
-	mov     esi,OFFSET filename07
+	mov     eax,OFFSET filename07
 	call    load_put_PCXX
 ;       call    SCRON
 
-	mov     esi,OFFSET filename08
-	mov     edi,OFFSET pcx_buffer
-	mov     ecx,30495
-	call    load_file
+	mov     eax,OFFSET filename08
+	mov     edx,OFFSET pcx_buffer
+	mov     ebx,30495
+	call    load_file_
 
 	mov     ebp,220
 	mov     [_TimerTicks],0
