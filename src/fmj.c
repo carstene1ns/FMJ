@@ -197,9 +197,7 @@ int main(int argc, char *argv[])
 	case 0 :
 		SOUND = 0;
 		printf("NO Sound!\n");
-		delay(2000);
-//		vid_mode(0x03);
-//		system("logo.exe");
+		delay(1000);
 
 		startASM();
 		break;
@@ -214,9 +212,7 @@ int main(int argc, char *argv[])
 		printf("Addr:%03x\n",Port);
 		printf("IRQ:%d\n",IRQ);
 		printf("DMA:%d\n",DRQ);
-		delay(2000);
-//		vid_mode(0x03);
-//		system("logo.exe");
+		delay(1000);
 
 		startASM();
 		break;
@@ -227,9 +223,7 @@ int main(int argc, char *argv[])
 			SOUND = 0;
 			printf("Sound Blaster not detected.\n");
 			printf("NO Sound!\n");
-			delay(2000);
-//			vid_mode(0x03);
-//			system("logo.exe");
+			delay(1000);
 
 			startASM();
 		}
@@ -240,9 +234,7 @@ int main(int argc, char *argv[])
 			printf("Addr:%03x\n",Port);
 			printf("IRQ:%d\n",IRQ);
 			printf("DMA:%d\n",DRQ);
-			delay(2000);
-//			vid_mode(0x03);
-//			system("logo.exe");
+			delay(1000);
 
 			startASM();
 		}
