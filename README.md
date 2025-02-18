@@ -1,7 +1,7 @@
 # Full Metal Jacket
 Full Metal Jacket (c)1995, 1996 Mirinae Software, Inc.
 
-![FMJ](fullmetaljacket.jpg)
+![FMJ](res/fullmetaljacket.jpg)
 
 This is the all files of excutables, data and source files of PC game Full Metal Jacket.
 
@@ -23,4 +23,4 @@ If you want build project, you may need
 
 Full Metal Jacket used Tiny MOD Player v2.11 for BGM play.
 
-![FMJ](fullmetaljacket-1.png) ![FMJ](fullmetaljacket-3.png) ![FMJ](fullmetaljacket-4.png) ![FMJ](fullmetaljacket-5.png)
+![FMJ](res/fullmetaljacket-1.png) ![FMJ](res/fullmetaljacket-3.png) ![FMJ](res/fullmetaljacket-4.png) ![FMJ](res/fullmetaljacket-5.png)
