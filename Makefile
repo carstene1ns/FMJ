@@ -9,7 +9,7 @@ LOPT=SYS dos4g OP QUIET
 AOPT=-m -n -zn -z -q -ml -p -t -jsmart -iinc
 OBJ=fmj.obj metal.obj files.obj fmjmenu.obj &
     modload.obj modplay.obj grplib.obj sprite.obj fli.obj
-DATAOBJ=\src\MAIN_DAT.OBJ \src\EN_DAT.OBJ
+DATAOBJ=src/main_dat.obj src/en_dat.obj
 
 fmj.exe: $(OBJ) 
 	*$(LN) N $@ $(LOPT) F { $(OBJ) $(DATAOBJ) }
@@ -17,7 +17,7 @@ fmj.exe: $(OBJ)
 sprvue.exe: sprvue.obj
 	$(LN) N $@ $(LOPT) F $<
 
-.c: \src\;\tools\
+.c: src/;tools/
 
 .c.obj:
 	$(CC) $(COPT) -fo=$@ $<

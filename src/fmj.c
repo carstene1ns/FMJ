@@ -163,10 +163,12 @@ void SoundFX(unsigned number)
 	}
 }
 
-PlayBGM(Module *Modulefile)
+void PlayBGM(Module *Modulefile)
 {
 	if(SOUND)
-	MODPlayModule(Modulefile,8,11111,Port,IRQ,DRQ,PM_TIMER);
+	{
+		MODPlayModule(Modulefile,8,11111,Port,IRQ,DRQ,PM_TIMER);
+	}
 }
 
 int main(int argc, char *argv[])
