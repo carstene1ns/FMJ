@@ -23,6 +23,7 @@ extrn	xmode		:near
 extrn	mode320X240     :near
 extrn	SCROFF        	:near
 extrn	SCRON        	:near
+extrn	VRAMCLS		    :near
 extrn	wait_vrt        :near
 extrn	clean           :near
 extrn	erase           :near

@@ -193,7 +193,6 @@ PUBLIC  _YC_
 PUBLIC  _SONGptr_
 
 	include grplib.ash              ; graphics lib. header file
-	include fli.ash                 ; flic file player
 
 _DATA   SEGMENT PUBLIC USE32 DWORD 'DATA'
 
@@ -432,7 +431,6 @@ tilefilenameD   db   "fmj5d.til",0,0,0,0
 filename02      db   "fmj.pal",0
 filename03      db   "record.sav",0
 filename04      db   "intro/mire.fli",0
-filename041     db   "intro/title.dat",0
 filename051     db   "intro/fmjopen1.fli",0
 filename052     db   "intro/fmjopen2.fli",0
 filename053     db   "intro/fmjopen3.fli",0
@@ -915,6 +913,7 @@ _BSS    ENDS
 _TEXT   SEGMENT PUBLIC USE32 DWORD 'CODE'
 	ASSUME  cs:_TEXT,ds:DGROUP,es:DGROUP,ss:DGROUP
 
+; sprite.asm
 extrn   put_spr:        near
 extrn   put_shadow:     near
 extrn   put_sprR:       near
@@ -926,9 +925,12 @@ extrn   world2map:      near
 extrn   draw_compas:    near
 extrn   draw_floor3:    near
 
+; fmj.c
 extrn   FMJMenu_:       near            ; C register call
 extrn   SoundFX_:       near            ; C register call
 extrn   PlayBGM_:       near            ; C register call
+
+; modload.c / modplay.asm
 extrn   MODLoadModule_: near            ; C register call
 extrn   MODFreeModule_: near            ; C register call
 extrn   _MODStopModule: near            ; C stack call ( no parameter )
@@ -937,6 +939,7 @@ extrn   _MODSetSampleVolume: near       ; C stack call ( byte volume )
 extrn   _InstallTimer:  near            ; C stack call ( no parameter )
 extrn   _DeinstallTimer:near            ; C stack call ( no parameter )
 
+; files.c
 extrn   open_file_  : near              ; C register call
 extrn   close_file_ : near              ; C register call
 extrn   read_file_  : near              ; C register call
@@ -945,6 +948,9 @@ extrn   move_file_pointer_: near        ; C register call
 extrn   load_file_  : near              ; C register call
 extrn   save_file_  : near              ; C register call
 extrn   exists_file_: near              ; C register call
+
+; fli.c
+extrn	fli_file_run_: near             ; C register call
 
 extrn   itoa_:          near            ; C std. LIB function
 
@@ -6952,31 +6958,16 @@ startASM_       PROC
 	mov	eax,13h
 	call	vid_mode_
 
-	call    keyint_on                ; install key interrupt handler
-
 	mov     eax,_BrightAdjust
 	mov     gammano,eax
 
 	CALL    VRAMCLS
-	MOV     EDX,OFFSET filename04    ;  Mirinae LOGO
-	CALL    FLI_FILE_RUN             ;
+	MOV     EAX,OFFSET filename04    ;  Mirinae LOGO
+	CALL    fli_file_run_            ;
 
 	;-----------
 	; FMJ TITLE
 	;-----------
-;	call    SCROFF
-;	mov     esi,OFFSET filename041
-;	call    load_put_PCX
-;	call    SCRON
-
-;	mov     [_TimerTicks],0
-@@repeat___:
-;	cmp     key_hit,0
-;	jnz     @@gogogo___
-;	mov     eax,[_TimerTicks]
-;	cmp     eax,70*3
-;	jb      @@repeat___
-@@gogogo___:
 
 	call    _DeinstallTimer
 
@@ -7010,28 +7001,27 @@ startASM_       PROC
 	mov	eax,13h
 	call	vid_mode_
 
-	MOV     EDX,OFFSET filename051   ;
-	CALL    FLI_FILE_RUN             ;
-
-	cmp     key_hit,_ESC
+	MOV     EAX,OFFSET filename051
+	CALL    fli_file_run_
+	cmp     eax,1
 	je      SHORT @@title
 
-	MOV     EDX,OFFSET filename052
-	CALL    FLI_FILE_RUN
-
-	cmp     key_hit,_ESC
+	MOV     EAX,OFFSET filename052
+	CALL    fli_file_run_
+	cmp     eax,1
 	je      SHORT @@title
 
-	MOV     EDX,OFFSET filename053
-	CALL    FLI_FILE_RUN
-
-	cmp     key_hit,_ESC
+	MOV     EAX,OFFSET filename053
+	CALL    fli_file_run_
+	cmp     eax,1
 	je      SHORT @@title
 
-	MOV     EDX,OFFSET filename054
-	CALL    FLI_FILE_RUN
+	MOV     EAX,OFFSET filename054
+	CALL    fli_file_run_
 
 @@title:
+	call    keyint_on                ; install key interrupt handler
+
 	;---------
 	; TITLE
 	;---------
@@ -7594,28 +7584,6 @@ startASM_       PROC
 	;-------------------
 @fine2: ;  Quit to DOS  ( from main menu )
 	;-------------------
-;       mov     ax,13h
-;       int     10h
-
-;       call    SCROFF
-;       mov     esi,OFFSET filename071
-;       call    load_put_PCX
-;       call    SCRON
-;       wait_key&time 0,4
-;       mov     esi,OFFSET filename072
-;       call    load_put_PCX
-;       wait_key&time 0,4
-;       mov     esi,OFFSET filename073
-;       call    load_put_PCX
-;       wait_key&time 0,4
-;       mov     esi,OFFSET filename074
-;       call    load_put_PCX
-;       wait_key&time 0,4
-;       mov     esi,OFFSET filename075
-;       call    load_put_PCX
-;       wait_key&time 0,4
-;       mov     esi,OFFSET filename076
-;       call    load_put_PCX
 
 	call    keyint_off
 

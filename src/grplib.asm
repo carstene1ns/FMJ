@@ -285,6 +285,17 @@ SCRON:  CLI
 	STI
 	RET
 
+PUBLIC	VRAMCLS
+VRAMCLS	PROC
+	CALL    SCROFF
+	MOV     ECX,64000/4
+	MOV     EDI,0A0000H     ;00
+	XOR     EAX,EAX
+	REP     STOSD
+	CALL    SCRON
+	RET
+VRAMCLS	ENDP
+
 ;------------------------------------
 ; wait for start of vertical retrace
 ;------------------------------------

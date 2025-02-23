@@ -4,7 +4,7 @@
 CC=wcc386
 LN=wlink
 AS=tasmx
-COPT=-3r -d0 -zq -mf -oacilrt -s -bt=dos -iinc
+COPT=-3r -d0 -za99 -zq -mf -oacilrt -s -bt=dos -iinc
 LOPT=SYS dos4g OP QUIET
 AOPT=-m -n -zn -z -q -ml -p -t -jsmart -iinc
 OBJ=fmj.obj metal.obj files.obj fmjmenu.obj &
