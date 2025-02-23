@@ -531,7 +531,7 @@ void CutSprF(int sx, int sy, int dx, int dy, int index)
 void FMJMainMenuRestore(Byte *fmjpal)
 {
     FadeOut(fmjpal);
-    PcxView("FMJA.PCX");
+    PcxView("images/fmja.pcx");
     SaveRange(60, 78, 85 + 150, 78 + 40, PcxMem);
     SprFW(64, MenuAxis[MenuNewBar], 4 + MenuNewBar, 0);
 //    SaveRange(85, 78, 85 + 150, 78 + 40, PcxMem);
@@ -837,7 +837,7 @@ void FMJMainMenuStart(int judg)
     if(judg == 0)
     {
 	FadeOut(FMP1);
-	PcxView("FMJA.PCX");
+	PcxView("images/fmja.pcx");
 	SprFW(64, 46, 4, 0);
 	SaveRange(60, 78, 60 + 150, 78 + 40, PcxMem);
 //    SprFW(89, 46, 4, 0);
@@ -910,7 +910,7 @@ void MissionStart(void)
     loop = 1, bar = idx = 0;
 
     FadeOut(FMP1);
-    PcxView("FMJD.PCX");
+    PcxView("images/fmjd.pcx");
 
     SaveRange(36, 27, 125, 74, PcxMem);
     SaveRange(32, 142, 130, 176, PcxMem);
@@ -1124,7 +1124,7 @@ void Environment(void)
     loop = 1, bar = 0;
 
     FadeOut(FMP1);
-    PcxView("FMJB.PCX");
+    PcxView("images/fmjb.pcx");
 //    SprFW(30, 35, 17, 0);
     SprFW(20, 32, 17, 0);
     EnvironView();
@@ -1247,7 +1247,7 @@ void Finality(void)
     loop = 1, bar = 0;
 
     FadeOut(FMP1);
-    PcxView("FMJC.PCX");
+    PcxView("images/fmjc.pcx");
     SprFW(91, 88, 10, 0);
 //    SprFW(89, 90, 10, 0);
     FadeIn(FMP1);
@@ -1292,7 +1292,7 @@ void main(void)
 
     ModeChange(0x13);
 
-//    PcxView2("fmja.pcx");
+//    PcxView2("images/fmja.pcx");
     FadeIn(FMP1);
 //    CutSprF(0,0,50,50,0);
 //    PutSprF(100,100,0,0);

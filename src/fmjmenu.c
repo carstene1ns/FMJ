@@ -390,50 +390,50 @@ void LoadMenuFont(void)
     }
     fclose(fp);
 
-//    PcxView("FMJA.PCX");
+//    PcxView("images/fmja.pcx");
 
 }
 
 void LoadMenuFont2(void)
 {
-    PcxView2("FMJA.PCX");
+    PcxView2("images/fmja.pcx");
     CutSprF(64,46,190,22,0);
     CutSprF(64,74,190,22,1);
     CutSprF(64,102,190,22,2);
     CutSprF(64,130,190,22,3);
 
-    PcxView2("FMJA-1.PCX");
+    PcxView2("images/fmja-1.pcx");
     CutSprF(64,46,190,22,4);
     CutSprF(64,74,190,22,5);
     CutSprF(64,102,190,22,6);
     CutSprF(64,130,190,22,7);
 //
-    PcxView2("FMJC.PCX");
+    PcxView2("images/fmjc.pcx");
     CutSprF(80,88,72,22,8);
     CutSprF(151,88,72,22,9);
 
-    PcxView2("FMJC-1.PCX");
+    PcxView2("images/fmjc-1.pcx");
     CutSprF(80,88,72,22,10);
     CutSprF(151,88,72,22,11);
 //
-    PcxView2("FMJB.PCX");
+    PcxView2("images/fmjb.pcx");
     CutSprF(20,32,281,22,12);
     CutSprF(20,60,281,22,13);
     CutSprF(20,88,281,22,14);
     CutSprF(20,116,281,22,15);
     CutSprF(20,144,281,22,16);
 
-    PcxView2("FMJB-1.PCX");
+    PcxView2("images/fmjb-1.pcx");
     CutSprF(20,32,281,22,17);
     CutSprF(20,60,281,22,18);
     CutSprF(20,88,281,22,19);
     CutSprF(20,116,281,22,20);
     CutSprF(20,144,281,22,21);
 //
-    PcxView2("FMJG.PCX");
+    PcxView2("images/fmjg.pcx");
     CutSprF(84,70,150,40,24);
 //
-    PcxView2("FMJD-1.PCX");
+    PcxView2("images/fmjd-1.pcx");
 //    CutSprF(176,14,38,11,35);
 //    CutSprF(81,15,38,11,36);
     CutSprF(152,7,131,21,35);
@@ -443,13 +443,13 @@ void LoadMenuFont2(void)
     CutSprF(191,67,94,11,43);
     CutSprF(191,84,94,11,44);
 
-    PcxView2("FMJD.PCX");
+    PcxView2("images/fmjd.pcx");
     CutSprF(191,33,94,11,37);
     CutSprF(191,50,94,11,38);
     CutSprF(191,67,94,11,39);
     CutSprF(191,84,94,11,40);
 //
-    PcxView2("FMJH-1.PCX");
+    PcxView2("images/fmjh-1.pcx");
     CutSprF(23,3,266,29,83);
     CutSprF(23,35,266,29,84);
     CutSprF(23,67,266,29,85);
@@ -457,7 +457,7 @@ void LoadMenuFont2(void)
     CutSprF(23,131,266,29,87);
     CutSprF(23,163,266,29,88);
 
-    PcxView2("FMJH-2.PCX");
+    PcxView2("images/fmjh-2.pcx");
     CutSprF(23,3,266,29,89);
     CutSprF(23,35,266,29,90);
     CutSprF(23,67,266,29,91);
@@ -465,12 +465,12 @@ void LoadMenuFont2(void)
     CutSprF(23,131,266,29,93);
     CutSprF(23,163,266,29,94);
 
-    PcxView2("FMJH-3.PCX");
+    PcxView2("images/fmjh-3.pcx");
     CutSprF(23,3,266,29,95);
     CutSprF(23,35,266,29,96);
     CutSprF(23,67,266,29,97);
 
-    PcxView2("FMJH.PCX");
+    PcxView2("images/fmjh.pcx");
     CutSprF(18,54,276,57,98);
 }
 
@@ -641,7 +641,7 @@ void CutSprF(int sx, int sy, int dx, int dy, int index)
 void FMJMainMenuRestore(Byte *fmjpal)
 {
     FadeOut(fmjpal);
-    PcxView("FMJA.PCX");
+    PcxView("images/fmja.pcx");
     SaveRange(85, 78, 85 + 150, 78 + 40, PcxMem);
 //    SprFW(64, MenuAxis[MenuNewBar], 4 + MenuNewBar, 0);
     PutSprF(64, MenuAxis[MenuNewBar], 4 + MenuNewBar, 0);
@@ -954,7 +954,7 @@ void FMJMainMenuStart(int judg)
     if(judg == 0)
     {
 	FadeOut(FMP1);
-	PcxView("FMJA.PCX");
+	PcxView("images/fmja.pcx");
 //	SprFW(64, 46, 4, 0);
 	PutSprF(64, 46, 4, 0);
 	SaveRange(85, 78, 85 + 150, 78 + 40, PcxMem);
@@ -1029,7 +1029,7 @@ void MissionStart(void)
     loop = 1, bar = idx = 0;
 
     FadeOut(FMP1);
-    PcxView("FMJD.PCX");
+    PcxView("images/fmjd.pcx");
 
     SaveRange(36, 27, 125, 74, PcxMem);
     SaveRange(32, 142, 130, 176, PcxMem);
@@ -1293,7 +1293,7 @@ void MissionLoad(void)
     if(! key) return;
 
     FadeOut(FMP1);
-    PcxView("FMJE.PCX");
+    PcxView("images/fmje.pcx");
     ShowAllSaveData();
     FadeIn(FMP1);
 
@@ -1439,7 +1439,7 @@ void Environment(void)
     loop = 1, bar = 0;
 
     FadeOut(FMP1);
-    PcxView("FMJB.PCX");
+    PcxView("images/fmjb.pcx");
 //    SprFW(20, 32, 17, 0);
     PutSprF(20, 32, 17, 0);
     EnvironView();
@@ -1575,7 +1575,7 @@ void Finality(void)
     loop = 1, bar = 0;
 
     FadeOut(FMP1);
-    PcxView("FMJC.PCX");
+    PcxView("images/fmjc.pcx");
 //    SprFW(91, 88, 10, 0);
     PutSprF(80, 88, 10, 0);
     FadeIn(FMP1);
