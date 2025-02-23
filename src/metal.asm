@@ -435,10 +435,10 @@ filename051     db   "intro/fmjopen1.fli",0
 filename052     db   "intro/fmjopen2.fli",0
 filename053     db   "intro/fmjopen3.fli",0
 filename054     db   "intro/fmjopen4.fli",0
-filename06      db   "tit-end.grp",0
-filename07      db   "credit.grp",0
-filename08      db   "end1.dat",0
-filename09      db   "end2.dat",0   ; password image data
+filename06      db   "images/tit-end.grp",0
+filename07      db   "images/credit.grp",0
+filename08      db   "images/end1.dat",0
+filename09      db   "images/end2.dat",0   ; password image data
 
 SONG    label   dword
 	dd      SONG01,SONG02,SONG03,SONG04,SONG05
