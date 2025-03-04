@@ -66,11 +66,13 @@ static Sample *FX[MAXFX];
 static word Port;
 static byte IRQ,DRQ;
 
+static const char *version = "1.03e";
+
 static void Intro(void)
 {
 	vid_mode(0x03);
 
-	printf("FULL METAL JACKET Version 1.02e\n");
+	printf("FULL METAL JACKET Version %s\n", version);
 	printf("Action Simulation Game.\n");
 	printf("Copyright (c) 1995, 1996 MIRINAE Software, Inc.\n\n");
 }
@@ -240,7 +242,7 @@ int main(int argc, char *argv[])
     }
 
     SaveCFG();
-    printf("\nThanks for playing FULL METAL JACKET Version 1.02e \n");
+    printf("\nThanks for playing FULL METAL JACKET Version %s\n", version);
 
     return 0;
 }

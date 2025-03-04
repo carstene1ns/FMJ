@@ -3,10 +3,15 @@
 
 static const char *message01 = "file reading error";
 static const char *message02 = "file saving error";
-static const char *message03 = "file saving ok";
-static const char *message04 = "error moving file pointer";
+static const char *message03 = "error moving file pointer";
+
+#define DEBUG_FILES 0
 
 FILE *open_file(const char *filename, const char *mode) {
+#if DEBUG_FILES==1
+    fprintf(stderr, "trying to open file %s\n", filename);
+#endif
+
     FILE *handle = fopen(filename, mode);
     if (handle == NULL) {
         fprintf(stderr, "error opening file %s with mode %s\n", filename, mode);
@@ -54,11 +59,11 @@ int write_file(FILE *handle, const void *data, size_t size) {
 
 int move_file_pointer(FILE *handle, long offset, int whence) {
     if (handle == NULL) {
-        fprintf(stderr, "%s, no handle\n", message04);
+        fprintf(stderr, "%s, no handle\n", message03);
         return 0;
     }
     if (fseek(handle, offset, whence) != 0) {
-        fprintf(stderr, "%s\n", message04);
+        fprintf(stderr, "%s\n", message03);
         return 0;
     }
     return 1;
@@ -77,7 +82,9 @@ int load_file(const char *filename, void *buffer, size_t size) {
     }
     close_file(handle);
 
-    fprintf(stderr, "%s: %s\n", "read ok", filename); // disable in non-debug
+#if DEBUG_FILES==1
+    fprintf(stderr, "read ok: %s\n", filename);
+#endif
     return 1;
 }
 
@@ -97,7 +104,9 @@ int save_file(const char *filename, const void *data, size_t size) {
     }
     close_file(handle);
 
-    fprintf(stderr, "%s: %s\n", message03, filename); // disable in non-debug
+#if DEBUG_FILES==1
+    fprintf(stderr, "file saving ok: %s\n", filename);
+#endif
     return 1;
 }
 

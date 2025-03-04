@@ -379,53 +379,53 @@ enemy_score     dw   0
 BONUS           dw   600,700,800,850,900,1200,1250,1350,1400,1500
 		dw   1600,1700,2000,2000,0
 
-mapfilename     db   "fmjk1.map",0,0,0,0     ;0
-		db   "fmjk2.map",0,0,0,0     ;1
-		db   "fmjk3.map",0,0,0,0     ;2
-		db   "fmjk4.map",0,0,0,0     ;3
-		db   "fmjk5.map",0,0,0,0     ;4
-		db   "fmjk6.map",0,0,0,0     ;5
-		db   "fmjk7.map",0,0,0,0     ;6
-		db   "fmjk8.map",0,0,0,0     ;7
-		db   "fmjk9.map",0,0,0,0     ;8
-		db   "fmjk10.map",0,0,0      ;9
-		db   "fmjk11.map",0,0,0      ;10
-		db   "fmjk12.map",0,0,0      ;11
-		db   "fmjk13.map",0,0,0      ;12
-		db   "fmjk14.map",0,0,0      ;13
-		db   "fmjk15.map",0,0,0      ;14
+mapfilename     db   "maps/fmjk1.map",0,0     ;0
+		db   "maps/fmjk2.map",0,0     ;1
+		db   "maps/fmjk3.map",0,0     ;2
+		db   "maps/fmjk4.map",0,0     ;3
+		db   "maps/fmjk5.map",0,0     ;4
+		db   "maps/fmjk6.map",0,0     ;5
+		db   "maps/fmjk7.map",0,0     ;6
+		db   "maps/fmjk8.map",0,0     ;7
+		db   "maps/fmjk9.map",0,0     ;8
+		db   "maps/fmjk10.map",0      ;9
+		db   "maps/fmjk11.map",0      ;10
+		db   "maps/fmjk12.map",0      ;11
+		db   "maps/fmjk13.map",0      ;12
+		db   "maps/fmjk14.map",0      ;13
+		db   "maps/fmjk15.map",0      ;14
 
-tilefilename    db   "fmj5.til",0,0,0,0,0     ;0
-		db   "fmj6.til",0,0,0,0,0     ;1
-		db   "fmj7.til",0,0,0,0,0     ;2
-		db   "fmj8.til",0,0,0,0,0     ;3
-		db   "fmj9.til",0,0,0,0,0     ;4
-		db   "fmj10.til",0,0,0,0      ;5
-		db   "fmje1.til",0,0,0,0      ;6
-		db   "fmjx1.til",0,0,0,0      ;7
-		db   "fmj2-2.til",0,0,0       ;8
-		db   "fmje2.til",0,0,0,0      ;9
-		db   "fmje2.til",0,0,0,0      ;10
-		db   "fmje2.til",0,0,0,0      ;11
-		db   "fmje4.til",0,0,0,0      ;12
-		db   "fmje4.til",0,0,0,0      ;13
-		db   "fmje4.til",0,0,0,0      ;14
+tilefilename    db   "tiles/fmj5.til",0,0,0     ;0
+		db   "tiles/fmj6.til",0,0,0     ;1
+		db   "tiles/fmj7.til",0,0,0     ;2
+		db   "tiles/fmj8.til",0,0,0     ;3
+		db   "tiles/fmj9.til",0,0,0     ;4
+		db   "tiles/fmj10.til",0,0      ;5
+		db   "tiles/fmje1.til",0,0      ;6
+		db   "tiles/fmjx1.til",0,0      ;7
+		db   "tiles/fmj2-2.til",0       ;8
+		db   "tiles/fmje2.til",0,0      ;9
+		db   "tiles/fmje2.til",0,0      ;10
+		db   "tiles/fmje2.til",0,0      ;11
+		db   "tiles/fmje4.til",0,0      ;12
+		db   "tiles/fmje4.til",0,0      ;13
+		db   "tiles/fmje4.til",0,0      ;14
 
-tilefilenameD   db   "fmj5d.til",0,0,0,0
-		db   "fmj6d.til",0,0,0,0
-		db   "fmj7d.til",0,0,0,0
-		db   "fmj8d.til",0,0,0,0
-		db   "fmj9d.til",0,0,0,0
-		db   "fmj10d.til",0,0,0
-		db   "fmje1d.til",0,0,0
-		db   "fmjx1d.til",0,0,0
-		db   "fmj2-2d.til",0,0
-		db   "fmje2-d1.til",0
-		db   "fmje2-d1.til",0
-		db   "fmje2-d1.til",0
-		db   "fmje4-d1.til",0
-		db   "fmje4-d1.til",0
-		db   "fmje4-d1.til",0
+tilefilenameD   db   "tiles/fmj5d.til",0,0,0,0
+		db   "tiles/fmj6d.til",0,0,0,0
+		db   "tiles/fmj7d.til",0,0,0,0
+		db   "tiles/fmj8d.til",0,0,0,0
+		db   "tiles/fmj9d.til",0,0,0,0
+		db   "tiles/fmj10d.til",0,0,0
+		db   "tiles/fmje1d.til",0,0,0
+		db   "tiles/fmjx1d.til",0,0,0
+		db   "tiles/fmj2-2d.til",0,0
+		db   "tiles/fmje2-d1.til",0
+		db   "tiles/fmje2-d1.til",0
+		db   "tiles/fmje2-d1.til",0
+		db   "tiles/fmje4-d1.til",0
+		db   "tiles/fmje4-d1.til",0
+		db   "tiles/fmje4-d1.til",0
 
 ;; file name table
 filename02      db   "fmj.pal",0
@@ -5509,7 +5509,7 @@ mission_load    PROC
 	mov     esi,_mission_no
 	dec     esi
 	mov     esi,mission_number[esi*4]            ;;;;
-	imul    esi,13
+	imul    esi,17
 	add     eax,esi
 	mov     edx,offset FILE_READ
 	call    open_file_
@@ -5544,7 +5544,7 @@ mission_load    PROC
 	mov     esi,_mission_no
 	dec     esi
 	mov     esi,mission_number[esi*4]            ;;;;
-	imul    esi,13
+	imul    esi,19
 	add     eax,esi
 	mov     edx,offset FILE_READ
 	call    open_file_
@@ -5572,7 +5572,7 @@ mission_load    PROC
 ;       mov     eax,_mission_no
 ;       dec     eax
 ;       mov     eax,mission_number[eax*4]            ;;;;
-;       imul    eax,13
+;       imul    eax,16
 ;       add     esi,eax
 ;       mov     edi,offset MAP_load
 ;       mov     ecx,8 + (256*256*4) + (2898*4)
@@ -5582,7 +5582,7 @@ mission_load    PROC
 	mov     esi,_mission_no
 	dec     esi
 	mov     esi,mission_number[esi*4]            ;;;;
-	imul    esi,13
+	imul    esi,16
 	add     eax,esi
 	mov     edx,offset FILE_READ
 	call    open_file_
