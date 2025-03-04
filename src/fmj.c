@@ -14,7 +14,7 @@
 
 #define MAXFX 20
 
-struct config_data {
+static struct config_data {
 		short sound_card;
 		short addr;
 		short IRQ;
@@ -23,10 +23,8 @@ struct config_data {
 		short dummy2;
 }config = {0,0x220,5,1,0,0};
 
-extern  int mission_no;
 extern  int replay;
 extern  int startASM(void);
-extern  int FindSqrt(int);
 
 extern  int ResolutionAdjust;               // 해상도 조절 변수.(외부에서 사용함)
 extern  int ScreenSizeAdjust;               // 화면 크기 조절 변수.(외부에서 사용함)
@@ -40,9 +38,9 @@ void SoundFX(unsigned number);
 extern  Module * SONGptr_;
 
 int SOUND;
-int channel = 4;
+static int channel = 4;
 
-unsigned char *wavfn[MAXFX] ={
+static unsigned char *wavfn[MAXFX] ={
 			  "sounds/fmj01.wav",   // 0  _VALCAN_
 			  "sounds/fmj02.wav",       // 1  _DING_
 			  "sounds/fmj03.wav",       // 2  _EXPLO0_
@@ -64,11 +62,11 @@ unsigned char *wavfn[MAXFX] ={
 			  "sounds/buston.wav",      // 18  _BUSTON_
 			  "sounds/bust.wav"};       // 19  _BUST_
 
-Sample *FX[MAXFX];
-word Port;
-byte IRQ,DRQ;
+static Sample *FX[MAXFX];
+static word Port;
+static byte IRQ,DRQ;
 
-void Intro(void)
+static void Intro(void)
 {
 	vid_mode(0x03);
 
@@ -77,7 +75,7 @@ void Intro(void)
 	printf("Copyright (c) 1995, 1996 MIRINAE Software, Inc.\n\n");
 }
 
-void LoadFX(void)
+static void LoadFX(void)
 {
     int i;
 
@@ -87,7 +85,7 @@ void LoadFX(void)
     }
 }
 
-void LoadCFG(void)
+static void LoadCFG(void)
 {
 	FILE * fp;
 	int buffer[5];
@@ -116,7 +114,7 @@ void LoadCFG(void)
 
 }
 
-void LoadConfig(void)
+static void LoadConfig(void)
 {
 	FILE * fp;
 
@@ -134,7 +132,7 @@ void LoadConfig(void)
 
 }
 
-void SaveCFG(void)
+static void SaveCFG(void)
 {
 	FILE * fp;
 	int buffer[5];
@@ -173,9 +171,6 @@ void PlayBGM(Module *Modulefile)
 
 int main(int argc, char *argv[])
 {
-    Module *Song;
-    int i;
-
     if( argc > 1 )
     {
 	if( argv[1][0] == 'r' || argv[1][0] == 'R')

@@ -4,6 +4,7 @@
 //
 
 #include <stdio.h>
+#include <ctype.h>
 #include <conio.h>
 #include <malloc.h>
 #include <string.h>
@@ -30,102 +31,103 @@
 extern void SoundFX(unsigned number);
 extern void Gamma(Byte *pal, int gammano);
 
-void ModeChange(int mode);
+static void ModeChange(int mode);
 int  GetKey(void);
-void SaveRange(int sx, int sy, int ex, int ey, Byte *mem);
-void RestoreRange(int sx, int sy, int ex, int ey, Byte *mem);
-void PcxView(Byte *fname);
-void PcxView2(Byte *fname);
-void PaletteLoad(void);
-void LoadMenuFont(void);
-void LoadMenuFont2(void);
-void LoadMenuWeap(void);
-void SprFW(int sx, int sy, int index, int flag);
-void FMJMainMenuRestore(Byte *fmjpal);
-void FillEnvironBar(int x, int y, int dist);
-void ChangeEnvironBar(int idx, int flag);
-void DrawCursor(int x, int y);
-int  InputFont(int x, int y);
-void DisplayStr(int x, int y, Byte *str);
-void ShowWeapon(int idx);
-void ShowScore(int idx);
-void AdjustWeight(void);
+static void SaveRange(int sx, int sy, int ex, int ey, Byte *mem);
+static void RestoreRange(int sx, int sy, int ex, int ey, Byte *mem);
+static void PcxView(Byte *fname);
+static void PcxView2(Byte *fname);
+static void PaletteLoad(void);
+static void LoadMenuFont(void);
+static void LoadMenuFont2(void);
+static void LoadMenuWeap(void);
+static void SprFW(int sx, int sy, int index, int flag);
+static void CutSprF(int sx, int sy, int dx, int dy, int index);
+static void FMJMainMenuRestore(Byte *fmjpal);
+static void FillEnvironBar(int x, int y, int dist);
+static void ChangeEnvironBar(int idx, int flag);
+static void DrawCursor(int x, int y);
+static int  InputFont(int x, int y);
+static void DisplayStr(int x, int y, Byte *str);
+static void ShowWeapon(int idx);
+static void ShowScore(int idx);
+static void AdjustWeight(void);
 
 int FMJMenu(void);
-void FMJMenuInit(void);
+static void FMJMenuInit(void);
 
-void FMJMainMenuStart(int judg);
-void FMJMainMenuRun(void);
-void CheckFirstMission(void);
+static void FMJMainMenuStart(int judg);
+static void FMJMainMenuRun(void);
+static void CheckFirstMission(void);
 
-void MissionStart(void);
-void MissionCommand(int ptr, int idx);
-void SaveFMJData(void);
-void BuyWeapon(int idx);
-int  BuyWeaponCheck(int idx);
-void SellWeapon(int idx);
+static void MissionStart(void);
+static void MissionCommand(int ptr, int idx);
+static void SaveFMJData(void);
+static void BuyWeapon(int idx);
+static int  BuyWeaponCheck(int idx);
+static void SellWeapon(int idx);
+ 
+static void MissionLoad(void);
+static int  FindSaveData(void);
+static void ShowAllSaveData(void);
+static void ShowSaveData(int idx);
+static void LoadFMJData(int idx);
 
-void MissionLoad(void);
-int  FindSaveData(void);
-void ShowAllSaveData(void);
-void ShowSaveData(int idx);
-void LoadFMJData(int idx);
+static void Environment(void);
+static void EnvironView(void);
+static void EnvironUpDown(int old, int new);
+static void EnvironLeftRight(int bar, int dist);
 
-void Environment(void);
-void EnvironView(void);
-void EnvironUpDown(int old, int new);
-void EnvironLeftRight(int bar, int dist);
-
-void Finality(void);
+static void Finality(void);
 
 //= Data =============================================================
 
-Byte   *VRam = (Byte *)0xA0000;       // 비디오 램.
-Byte   *VRam2;       // 비디오 램.
-PCXHDR PcxHead;                       // Pcx 구조체 정의.
-Byte   FMP1[768], FMP2[768];          // FMJ Menu 팔레트.
-Byte   *PcxMem;                       // Pcx그림 저장 장소(320 * 200).
-Word   CordTable[200];                // Y의 좌표값들.
-short  MenuNewBar, MenuOldBar;
-Word   MenuAxis[4] = { 46, 74, 102, 130 };
-Word   CommFlag;
-int    EnvironSet[5] = { 0, 0, 0, 0, 0 }; // 임시 FMJ 환경값.
-Byte   LoadFileName[20];
+static Byte   *VRam = (Byte *)0xA0000;       // 비디오 램.
+static Byte   *VRam2;       // 비디오 램.
+static PCXHDR PcxHead;                       // Pcx 구조체 정의.
+static Byte   FMP1[768], FMP2[768];          // FMJ Menu 팔레트.
+static Byte   *PcxMem;                       // Pcx그림 저장 장소(320 * 200).
+static Word   CordTable[200];                // Y의 좌표값들.
+static short  MenuNewBar, MenuOldBar;
+static Word   MenuAxis[4] = { 46, 74, 102, 130 };
+static Word   CommFlag;
+static int    EnvironSet[5] = { 0, 0, 0, 0, 0 }; // 임시 FMJ 환경값.
+static Byte   LoadFileName[20];
 int    FirstMission;                 // 처음 임무인가?
 
-SpriteMem  SprM[MENUFONTNUM];        // 스프라이트 저장 구조체 정의.
-SpriteMem2  SprM2[MENUFONTNUM];        // 스프라이트 저장 구조체 정의.
-WeaponMem  ArmsM[MENUWEAPNUM];       // FMJ 무기 저장 구조체 정의.
+static SpriteMem  SprM[MENUFONTNUM];        // 스프라이트 저장 구조체 정의.
+static SpriteMem2  SprM2[MENUFONTNUM];        // 스프라이트 저장 구조체 정의.
+static WeaponMem  ArmsM[MENUWEAPNUM];       // FMJ 무기 저장 구조체 정의.
 HostWeapon HostW[MENUWEAPNUM / 2];   // FMJ 주인공이 가지고 있는 무기들 정의.
 
-FMJSaveData FSave[5];
+static FMJSaveData FSave[5];
 
 // FMJ 무기들의 값.
-Word ArmsCost[20] = {
+static Word ArmsCost[20] = {
      1800,  100, 1350,   80, 3150, 200, 3800,  300,   60,   95,
        50, 2500,   30, 3200,   30, 900, 1000, 4500, 4700, 5000
 };
 
 // FMJ 무기들의 무게.
-Word ArmsWeight[20] = {
+static Word ArmsWeight[20] = {
      300,  250, 210, 150,  300,  150,  400,  200,   50,   25,
       45, 1500,   8, 1500,   8, 1300, 1500, 1500, 1800, 2200
 };
 
 // FMj 무기들의 제한 갯수.
-Word ArmsLimit[20] = {
+static Word ArmsLimit[20] = {
      1,  800, 1, 500, 1, 150, 1, 30, 10, 10,
      10,   1,  30, 1,  30, 1,   1, 1,  1, 1
 };
 
-int SaveFMJCount;                   // 세이브 된 화일 갯수.
+static int SaveFMJCount;                   // 세이브 된 화일 갯수.
 int MissionNumber;                  // 저장된 게임 로드시 임무 번호.
 int SuccessFlag;                    // 임무 성공 플래그.
-int LoadNumber;                     // Load일경우 몇번째 번호인가?
+static int LoadNumber;                     // Load일경우 몇번째 번호인가?
 
 int FMJTotalScore;                  // FMJ 점수.(외부에서 사용함)
-int FMJTotalBaseWeight;             // FMJ의 기본 무게.
-int FMJTotalAppendWeight;           // FMJ의 추가 무게.
+static int FMJTotalBaseWeight;             // FMJ의 기본 무게.
+static int FMJTotalAppendWeight;           // FMJ의 추가 무게.
 
 int ResolutionAdjust;               // 해상도 조절 변수.(외부에서 사용함)
 int ScreenSizeAdjust;               // 화면 크기 조절 변수.(외부에서 사용함)
@@ -133,8 +135,8 @@ int BrightAdjust;                   // 밝기 조절 변수.(외부에서 사용
 int EffectAdjust;                   // 효과음 조절 변수.(외부에서 사용함)
 int MusicAdjust;                    // 음악 조절 변수.(외부에서 사용함)
 
-int PLUSMINUS[5] = {1, 4, 1, 8, 8};           // 환경 설정 변경의 차이.
-int MAXVALUE[5] = {2, 64, 7, 255, 255};
+static int PLUSMINUS[5] = {1, 4, 1, 8, 8};           // 환경 설정 변경의 차이.
+static int MAXVALUE[5] = {2, 64, 7, 255, 255};
 //= Code =============================================================
 
 //- Base Code ----------------------------------------------
@@ -152,7 +154,7 @@ inline Byte RotateB(Byte value, DWord count) {
 }
 
 // 화면을 전환한다.
-void ModeChange(int mode)
+static void ModeChange(int mode)
 {
     union REGS r;
 
@@ -174,7 +176,7 @@ int GetKey(void)
 }
 
 // 화면을 밝아지게 한다.
-void FadeIn(Byte *pal)
+static void FadeIn(Byte *pal)
 {
     int i, j;
 
@@ -192,7 +194,7 @@ void FadeIn(Byte *pal)
 }
 
 // 화면을 어두워지게 한다.
-void FadeOut(Byte *pal)
+static void FadeOut(Byte *pal)
 {
     int i, j;
 
@@ -209,7 +211,7 @@ void FadeOut(Byte *pal)
 }
 
 // 지정된 곳의 장소를 저장한다.
-void SaveRange(int sx, int sy, int ex, int ey, Byte *mem)
+static void SaveRange(int sx, int sy, int ex, int ey, Byte *mem)
 {
     Word i, j, index;
 
@@ -224,7 +226,7 @@ void SaveRange(int sx, int sy, int ex, int ey, Byte *mem)
 }
 
 // 지정된 곳에 저장된 데이타를 복구한다.
-void RestoreRange(int sx, int sy, int ex, int ey, Byte *mem)
+static void RestoreRange(int sx, int sy, int ex, int ey, Byte *mem)
 {
     Word i, j, index;
 
@@ -240,7 +242,7 @@ void RestoreRange(int sx, int sy, int ex, int ey, Byte *mem)
 
 // PCX 화일을 보여준다.
 // 리턴 값 -> 0 : PCX 화일이 아니거나 화일이 없음. 1 : 성공.
-void PcxView(Byte *fname)
+static void PcxView(Byte *fname)
 {
     FILE *fp;
     int  rc, si, di, x, y, xsize, ysize;
@@ -293,7 +295,7 @@ void PcxView(Byte *fname)
     }
 }
 
-void PcxView2(Byte *fname)
+static void PcxView2(Byte *fname)
 {
     FILE *fp;
     int  rc, si, di, x, y, xsize, ysize;
@@ -348,12 +350,9 @@ void PcxView2(Byte *fname)
 
 // Fmj Menu Palette를 로드하여 초기화한다.
 // 리턴값 -> 0 : 화일이 없거나 메모리 할당에 실패함. 1 : 성공.
-void PaletteLoad(void)
+static void PaletteLoad(void)
 {
-    FILE *fp;
-    int  i;
-
-    fp = fopen("FMJP.P", "rb");
+    FILE *fp = fopen("FMJP.P", "rb");
     fread(FMP1, 768, 1, fp);
     fclose(fp);
 
@@ -363,7 +362,7 @@ void PaletteLoad(void)
 }
 
 // 4바이트 압축을 해서 결합을 한 폰트 화일을 로드한다.
-void LoadMenuFont(void)
+static void LoadMenuFont(void)
 {
     FILE *fp;
     int i, j, size, tsize;
@@ -394,7 +393,7 @@ void LoadMenuFont(void)
 
 }
 
-void LoadMenuFont2(void)
+static void LoadMenuFont2(void)
 {
     PcxView2("images/fmja.pcx");
     CutSprF(64,46,190,22,0);
@@ -475,7 +474,7 @@ void LoadMenuFont2(void)
 }
 
 // FMJ의 무기를 로드하는 함수.
-void LoadMenuWeap(void)
+static void LoadMenuWeap(void)
 {
     FILE *fp;
     int i, j, size, tsize;
@@ -514,7 +513,7 @@ void LoadMenuWeap(void)
 
 // 4바이트 압축을 한 폰트를 풀어서 화면에 보여준다.
 // flag : 0 -> 폰트, flag : 1 -> 무기.
-void SprFW(int sx, int sy, int index, int flag)
+static void SprFW(int sx, int sy, int index, int flag)
 {
     int   i, oldsx, srcount, tsize;
     short count;
@@ -582,11 +581,11 @@ void SprFW(int sx, int sy, int index, int flag)
     }
 }
 
-void PutSprF(int sx, int sy, int index, int flag)
+static void PutSprF(int sx, int sy, int index, int flag)
 {
     int i, j, sp, tp;
     int Dx, Dy;
-    Byte  data, *buf;
+    Byte *buf;
 
     if(flag == 0)
     {
@@ -610,11 +609,11 @@ void PutSprF(int sx, int sy, int index, int flag)
     }
 }
 
-void CutSprF(int sx, int sy, int dx, int dy, int index)
+static void CutSprF(int sx, int sy, int dx, int dy, int index)
 {
     int i, j, sp, tp;
     int size;
-    Byte  data, *buf;
+    Byte *buf;
 
     SprM2[index].ex = (Word)dx;
     SprM2[index].ey = (Word)dy;
@@ -638,7 +637,7 @@ void CutSprF(int sx, int sy, int dx, int dy, int index)
 }
 
 // FMJ 메인 메뉴로 복구한다.
-void FMJMainMenuRestore(Byte *fmjpal)
+static void FMJMainMenuRestore(Byte *fmjpal)
 {
     FadeOut(fmjpal);
     PcxView("images/fmja.pcx");
@@ -652,7 +651,7 @@ void FMJMainMenuRestore(Byte *fmjpal)
 }
 
 // FMJ 환경바를 지정한 거리만큼 칠한다.
-void FillEnvironBar(int x, int y, int dist)
+static void FillEnvironBar(int x, int y, int dist)
 {
     int i, j;
 
@@ -662,7 +661,7 @@ void FillEnvironBar(int x, int y, int dist)
 }
 
 // FMJ 환경바를 조절한다.
-void ChangeEnvironBar(int idx, int dist)
+static void ChangeEnvironBar(int idx, int dist)
 {
     int y, diff;
 
@@ -678,7 +677,7 @@ void ChangeEnvironBar(int idx, int dist)
 }
 
 // 커서를 그리는 함수.
-void DrawCursor(int x, int y)
+static void DrawCursor(int x, int y)
 {
     int i, imsi;
 
@@ -687,7 +686,7 @@ void DrawCursor(int x, int y)
 }
 
 // 문자를 입력받는다.
-int InputFont(int x, int y)
+static int InputFont(int x, int y)
 {
     int key, loop, ret, sx, dist;
 
@@ -740,9 +739,9 @@ int InputFont(int x, int y)
 }
 
 // 문자열을 출력한다.
-void DisplayStr(int x, int y, Byte *str)
+static void DisplayStr(int x, int y, Byte *str)
 {
-    int i, len, idx, chr;
+    int i, len, chr;
 
     len = strlen(str);
     for(i=0; i < len; i++)
@@ -757,7 +756,7 @@ void DisplayStr(int x, int y, Byte *str)
 }
 
 // FMJ 무기를 보여준다.
-void ShowWeapon(int idx)
+static void ShowWeapon(int idx)
 {
     int i, len;
     Byte num[20];
@@ -798,7 +797,7 @@ void ShowWeapon(int idx)
 }
 
 // 현재 자기의 돈, 현재 산 무기의 개수, 현재 자기가 소지할 수 있는 무게.
-void ShowScore(int idx)
+static void ShowScore(int idx)
 {
     int i, len;
     Byte num[20];
@@ -824,7 +823,7 @@ void ShowScore(int idx)
     }
 }
 
-void AdjustWeight(void)
+static void AdjustWeight(void)
 {
     int i, j, cnt, wet;
 
@@ -854,7 +853,7 @@ void AdjustWeight(void)
 
 int FMJMenu(void)
 {
-    int i, ret;
+    int i;
 
     if( SuccessFlag != 1 )
     FMJMenuInit();
@@ -916,7 +915,7 @@ int FMJMenu(void)
 }
 
 // FMJ 메뉴에 필요한 데이타를 초기화한다.(게임 처음에 실행)
-void FMJMenuInit(void)
+static void FMJMenuInit(void)
 {
     int i;
 
@@ -947,7 +946,7 @@ void FMJMenuInit(void)
 //- FMJ Menu Code ------------------------------------------
 
 // FMJ 메인 메뉴를 관리하는 함수.
-void FMJMainMenuStart(int judg)
+static void FMJMainMenuStart(int judg)
 {
     int key;
 
@@ -993,7 +992,7 @@ void FMJMainMenuStart(int judg)
     }
 }
 
-void FMJMainMenuRun(void)
+static void FMJMainMenuRun(void)
 {
     switch(MenuNewBar)
     {
@@ -1010,7 +1009,7 @@ void FMJMainMenuRun(void)
 }
 
 // 처음 임무 수행이면 이름을 입력받는다.
-void CheckFirstMission(void)
+static void CheckFirstMission(void)
 {
 //    SprFW(85, 78, 24, 0);
     PutSprF(85, 78, 24, 0);
@@ -1020,7 +1019,7 @@ void CheckFirstMission(void)
 }
 
 // FMJ 임무를 시작한다.
-void MissionStart(void)
+static void MissionStart(void)
 {
     int loop, key, bar, old, idx;
     int axis[4] = { 33, 50, 67, 84 };
@@ -1110,7 +1109,7 @@ void MissionStart(void)
     }
 }
 
-void MissionCommand(int ptr, int idx)
+static void MissionCommand(int ptr, int idx)
 {
     switch(ptr)
     {
@@ -1127,7 +1126,7 @@ void MissionCommand(int ptr, int idx)
 }
 
 // FMJ 데이타를 저장한다.
-void SaveFMJData(void)
+static void SaveFMJData(void)
 {
     FILE  *fp;
     int   imsi, i;
@@ -1195,7 +1194,7 @@ void SaveFMJData(void)
 }
 
 // FMJ 무기를 산다.
-void BuyWeapon(int idx)
+static void BuyWeapon(int idx)
 {
     int weight, cost, limit, flag;
 
@@ -1222,7 +1221,7 @@ void BuyWeapon(int idx)
 
 // 현재 무기 종류를 검사한다.
 // return : 1 -> 무기를 구입할수가 있다, return : 0 -> 무기를 구입할수가 없다.
-int BuyWeaponCheck(int idx)
+static int BuyWeaponCheck(int idx)
 {
     int ret;
 
@@ -1260,10 +1259,8 @@ int BuyWeaponCheck(int idx)
 }
 
 // 현재 자기가 소유한 물건을 판다.
-void SellWeapon(int idx)
+static void SellWeapon(int idx)
 {
-    int weight, cost;
-
     if(! HostW[idx].ArmsFlag) return;
 
     FMJTotalScore += ArmsCost[idx];
@@ -1282,7 +1279,7 @@ void SellWeapon(int idx)
 }
 
 // 저장된 임무를 불러온다.
-void MissionLoad(void)
+static void MissionLoad(void)
 {
     int loop, key, bar, old;
     int axis[5] = { 62, 81, 100, 119, 138 };
@@ -1332,7 +1329,7 @@ void MissionLoad(void)
 }
 
 // 저장된 FMJ 데이타가 있는가를 조사한다.
-int FindSaveData(void)
+static int FindSaveData(void)
 {
     FILE *fp;
     int i, j;
@@ -1365,7 +1362,7 @@ int FindSaveData(void)
 }
 
 // 저장된 모든 FMJ 데이타를 보여준다.
-void ShowAllSaveData(void)
+static void ShowAllSaveData(void)
 {
     int i, imsi;
     int axis[5] = { 62, 81, 100, 119, 138 };
@@ -1382,9 +1379,9 @@ void ShowAllSaveData(void)
 }
 
 // 지정된 번호의 FMJ 데이타를 보여준다.
-void ShowSaveData(int idx)
+static void ShowSaveData(int idx)
 {
-    int i, imsi;
+    int imsi;
     int axis[5] = { 62, 81, 100, 119, 138 };
     Byte num[10];
 
@@ -1395,7 +1392,7 @@ void ShowSaveData(int idx)
 }
 
 // 저장된 FMJ 데이타를 로드한다.
-void LoadFMJData(int idx)
+static void LoadFMJData(int idx)
 {
     FILE *fp;
     int  i;
@@ -1430,7 +1427,7 @@ void LoadFMJData(int idx)
 }
 
 // FMJ 환경을 조절한다.
-void Environment(void)
+static void Environment(void)
 {
     int loop, key, bar, old;
 //    int axis[5] = { 35, 63, 91, 119, 147 };
@@ -1494,7 +1491,7 @@ void Environment(void)
 }
 
 // FMJ의 환경 변수들을 보여준다.
-void EnvironView(void)
+static void EnvironView(void)
 {
     int var;
     int axis[3] = { 191, 225, 259 };
@@ -1516,7 +1513,7 @@ void EnvironView(void)
 }
 
 // 위, 아래로 움직이면서 환경 변수값을 보여주는 함수.
-void EnvironUpDown(int old, int new)
+static void EnvironUpDown(int old, int new)
 {
     int oldx, oldy, newx, newy;
     int axis[3] = { 191, 225, 259 };
@@ -1532,9 +1529,9 @@ void EnvironUpDown(int old, int new)
 }
 
 // 환경 변수값을 증가, 감소 시키는 함수.
-void EnvironLeftRight(int bar, int dist)
+static void EnvironLeftRight(int bar, int dist)
 {
-    int x, y, idx;
+    int y, idx;
     int axis[3] = { 191, 225, 259 };
 
     y = 39 + (bar * 28);
@@ -1567,7 +1564,7 @@ void EnvironLeftRight(int bar, int dist)
 }
 
 // FMJ 끝내기를 관리한다.
-void Finality(void)
+static void Finality(void)
 {
     int loop, key, old, bar;
     int axis[2] = { 80, 151 };
@@ -1606,11 +1603,3 @@ void Finality(void)
     CommFlag = 1 - bar;
     if(CommFlag == 0) FMJMainMenuRestore(FMP1);
 }
-
-//void main(void)
-//{
-//    FMJMenuInit();
-//    FMJMenu();
-//    printf("CommFlag is %d\n", CommFlag);
-//}
-

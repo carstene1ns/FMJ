@@ -14,11 +14,13 @@
 ---------------------------------------------------*/
 
 /* Video memory (mode 13h: 320x200, 64000 bytes) */
-unsigned char *vram = (unsigned char *)0xA0000;
+static unsigned char *vram = (unsigned char *)0xA0000;
 
 /* pcx_buffer: used as LOAD_MEMORY buffer */
-//#define LOAD_MEMORY (pcx_buffer)
-unsigned char LOAD_MEMORY[0x10000];  /* 64KB buffer */
+#pragma aux pcx_buffer "*";
+extern char pcx_buffer[];
+#define LOAD_MEMORY (pcx_buffer)
+//unsigned char LOAD_MEMORY[0x10000];  /* 64KB buffer */
 
 uint16_t FRAME_CNT = 0;
 
@@ -32,10 +34,10 @@ extern void Gamma(unsigned char *pal, int gammano);
 ---------------------------------------------------*/
 static void handle_RGB(unsigned char *chunk_ptr);
 static void handle_COPY(unsigned char *chunk_ptr);
-static void handle_BLK(unsigned char *chunk_ptr);
+static void handle_BLK(void);
 static void handle_LC(unsigned char *chunk_ptr);
 static void handle_RLE(unsigned char *chunk_ptr);
-static void set_palette(uint8_t start, uint32_t count, unsigned char *esi);
+static void set_palette(uint8_t start, uint32_t count, unsigned char *chunk_ptr);
 
 /* CHUNKS_RT table corresponding to chunk types 11,12,13,14,15,16 */
 enum CHUNKS_RT {
@@ -48,7 +50,7 @@ enum CHUNKS_RT {
 };
 
 /* Current Palette (R, G, B triplets for 256 colors) */
-unsigned char palette[256 * 3];
+static unsigned char palette[256 * 3];
 
 /*---------------------------------------------------
    Graphics and Animation Procedures
@@ -138,7 +140,7 @@ int fli_file_run(const char *filename) {
                     break;
 
                 case FLI_BLK:
-                    handle_BLK(current_chunk + 6);
+                    handle_BLK();
                     break;
 
                 case FLI_COPY1:
@@ -201,7 +203,7 @@ int fli_file_run(const char *filename) {
 ---------------------------------------------------*/
 static void handle_RGB(unsigned char *chunk_ptr) {
     /* Call handle_BLK to clear video memory */
-    handle_BLK(chunk_ptr);
+    handle_BLK();
 
     /* Read NUMBER OF PACKETS (2 bytes) */
     uint16_t num_packets = *(uint16_t *)chunk_ptr;
@@ -244,7 +246,7 @@ static void handle_COPY(unsigned char *chunk_ptr) {
    handle_BLK:
    Clears the video memory (VRAM) by setting it to zero.
 ---------------------------------------------------*/
-static void handle_BLK(unsigned char *chunk_ptr) {
+static void handle_BLK() {
     memset(vram, 0, 64000);
 }
 
@@ -255,8 +257,6 @@ static void handle_BLK(unsigned char *chunk_ptr) {
    into the video memory (vram).
 ---------------------------------------------------*/
 static void handle_LC(unsigned char *chunk_ptr) {
-    /* Set destination pointer to video memory */
-    unsigned char *dest_base = vram;
     /* read line offset from chunk_ptr and advance by 2 */
     uint16_t lineofs = *(uint16_t *)chunk_ptr;
     chunk_ptr += 2;
@@ -349,7 +349,7 @@ static void handle_RLE(unsigned char *chunk_ptr) {
       count: number of palette entries to update (each entry has 3 bytes)
       chunk_ptr: pointer to palette data.
 ---------------------------------------------------*/
-void set_palette(uint8_t start, uint32_t count, unsigned char *chunk_ptr) {
+static void set_palette(uint8_t start, uint32_t count, unsigned char *chunk_ptr) {
     int pal_index = start;
     /* Multiply count by 3 because each palette entry has 3 bytes */
     uint32_t total_bytes = count * 3;

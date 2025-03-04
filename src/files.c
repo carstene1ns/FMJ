@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const char *message01 = "file reading error";
-const char *message02 = "file saving error";
-const char *message03 = "file saving ok";
-const char *message04 = "error moving file pointer";
+static const char *message01 = "file reading error";
+static const char *message02 = "file saving error";
+static const char *message03 = "file saving ok";
+static const char *message04 = "error moving file pointer";
 
 FILE *open_file(const char *filename, const char *mode) {
     FILE *handle = fopen(filename, mode);
