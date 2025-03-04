@@ -4,9 +4,7 @@
 ;=========================================;
 	.386
 
-	LOCALS
-
-	include	VGA.INC
+	include	vga.inc
 
 WIDE 	equ	46
 HWIDE   equ	23
@@ -103,63 +101,63 @@ extrn	DARKER_TABLE:	byte
 PUBLIC	obj_x_
 PUBLIC	obj_y_
 
-spr_pointer	dd	0
+spr_pointer	dd	?
 
-xxx	dw	0
-yyy	dw	0
-zzz	dw	0
-rx 	dw	0
-ry 	dw	0
-rx_ 	dd	0
-ry_ 	dd	0
-rz 	dw	0
+xxx	dw	?
+yyy	dw	?
+zzz	dw	?
+rx 	dw	?
+ry 	dw	?
+rx_ 	dd	?
+ry_ 	dd	?
+rz 	dw	?
 
-xxxx	dd	0
-yyyy	dd	0
-zzzz	dd	0
+xxxx	dd	?
+yyyy	dd	?
+zzzz	dd	?
 
-xl	dd	0
-xleft	dd	0
-xright	dd	0
-xr	dd	0
-yu	dd	0
-yup	dd	0
-ydown	dd	0
+xl	dd	?
+xleft	dd	?
+xright	dd	?
+xr	dd	?
+yu	dd	?
+yup	dd	?
+ydown	dd	?
 
-XD	dd	0
-YD      dd	0
+XD	dd	?
+YD      dd	?
 
-ya	dd	0
-yb      dd	0
-dii     dd	0
-xdd_    dd	0
-ydd_    dd	0
+ya	dd	?
+yb      dd	?
+dii     dd	?
+xdd_    dd	?
+ydd_    dd	?
 
-xdd     dw	0
-ydd     dw	0
-ydu     dw	0
-yinc    dw	0
-y_d     dw	0
+xdd     dw	?
+ydd     dw	?
+ydu     dw	?
+yinc    dw	?
+y_d     dw	?
 
-sx      dd      0
-sy      dd      0
-sxsy    dd      0
-sxq     dd      0
-sy80    dd      0
+sx      dd      ?
+sy      dd      ?
+sxsy    dd      ?
+sxq     dd      ?
+sy80    dd      ?
 
-sx_start	dd	0
-sy_start	dd	0
+sx_start	dd	?
+sy_start	dd	?
 
-hlength		dd	0
-vlength		dd	0
-_vlength	dd	0
+hlength		dd	?
+vlength		dd	?
+_vlength	dd	?
 
-_vline_		dd	0
+_vline_		dd	?
 
-put_RT		dd	0
-obj_vth		dd	0
-obj_x_		dd	0
-obj_y_		dd	0
+put_RT		dd	?
+obj_vth		dd	?
+obj_x_		dd	?
+obj_y_		dd	?
 
 _BSS	ENDS
 
@@ -642,7 +640,7 @@ world2map       ENDP
 ;---------------------------------
 ; vertical draw for normal sprite
 ;---------------------------------
-vline   PROC
+vline   PROC   PRIVATE
 
 	push    ebp
 	push    ecx
@@ -789,7 +787,7 @@ vline   ENDP
 ;---------------------------------
 ; vertical draw for shadow sprite
 ;---------------------------------
-vlines	PROC
+vlines	PROC   PRIVATE
 
 	push    ebp
 	push    ecx
@@ -958,7 +956,7 @@ vlines	ENDP
 ;------------------------------
 ;
 ;------------------------------
-draw_sprR      PROC
+draw_sprR      PROC   PRIVATE
 
 	mov     edi,SCREEN_OFF          ;Calculate Init Pixel on dest.
 	add     edi,PageOffset          ;
@@ -1159,7 +1157,7 @@ put_shadowSC	PROC
 	ret
 put_shadowSC	ENDP
 
-draw_sprSC       proc
+draw_sprSC       proc   PRIVATE
 
 	push	ebp
 	push    pers
@@ -1323,7 +1321,7 @@ draw_sprSC       endp
 ;--------------------------------------
 ; normal sprite
 ;--------------------------------------
-put_sprS5       PROC    near
+put_sprS5       PROC    near   PRIVATE
 
 	mov     map_mask,11h
 	mov     ecx,xxxx                ; xxxx
@@ -1387,7 +1385,7 @@ put_sprS5       ENDP
 ;--------------------------------------
 ; shadow sprite
 ;--------------------------------------
-put_shadowS5       PROC    near
+put_shadowS5       PROC    near   PRIVATE
 	push	ebp
 
 	mov     map_mask,11h
@@ -1640,7 +1638,7 @@ draw_compas	ENDP
 ;-----------------------
 ; vertical draw
 ;-----------------------
-vline3  PROC
+vline3  PROC   PRIVATE
 
 	push    ebp
 	push    ecx

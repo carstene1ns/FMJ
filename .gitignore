@@ -3,11 +3,13 @@
 *.[Ee][Rr][Rr]
 
 # objects
-*.[Oo]
+*.o
 *.[Oo][Bb][Jj]
-# game data
+# game data objects
 !src/main_dat.obj
 !src/en_dat.obj
+# external objects
+!src/modplay.obj
 
 # game files
 *.[Cc][Ff][Gg]
@@ -17,3 +19,8 @@
 *.[Ee][Xx][Ee]
 # legacy executables
 !legacy/*.exe
+
+# cmake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake

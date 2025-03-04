@@ -15,8 +15,6 @@
 ;=========================================================
 	.386
 
-	LOCALS
-
 	include keyscan.inc             ; keyboard scan code defnition
 	include vga.inc                 ; VGA register and etc..
 
@@ -67,6 +65,8 @@ MAXOBJ  equ     150
 OBJNO   equ     3
 OBJWID  equ     49
 
+curObj equ [ebp.OBJECT] ; current object
+
 OBJECT  struc
 
 	obj_no          dd      ?       ;4 1
@@ -106,7 +106,6 @@ HostWeapon      ends
 
 DGROUP  GROUP _DATA,_BSS
 
-PUBLIC  _mission_no
 PUBLIC  _replay
 PUBLIC  eye_x
 PUBLIC  eye_x_
@@ -136,8 +135,6 @@ PUBLIC  Ubound
 PUBLIC  Dbound
 
 PUBLIC  SIN
-
-PUBLIC  xx
 
 PUBLIC  ey1
 PUBLIC  ey2
@@ -186,11 +183,10 @@ PUBLIC  TEXMAP
 PUBLIC  TEXMAPADD
 
 PUBLIC  DARKER_TABLE
-PUBLIC  key_hit
 
 PUBLIC  _XC_
 PUBLIC  _YC_
-PUBLIC  _SONGptr_
+;PUBLIC  _SONGptr_
 
 	include grplib.ash              ; graphics lib. header file
 
@@ -525,7 +521,7 @@ GREEN_TABLE     label   byte
 	db      144,144,145,145,146,146,147,147,148,148,149,149,150,150,151,151
 	db      152,152,153,153,154,154,155,155,156,156,157,157,158,158,159,159
 
-obj_type1       label  ; walker
+obj_type1       label  OBJECT; walker
 OBJECT <001h, 1024 SHL 16, 850 SHL 16,0, 0, 0, 64,3,3,  4,4,0, 0,0,0, 0, OFFSET en1_spr_data, OFFSET walk1_crs_data, 1,140, 16,16>
 OBJECT <002h, 1024 SHL 16, 850 SHL 16,0, 0, 0, 64,4,4,  3,3,0, 0,0,0, 0, OFFSET en1_spr_data, OFFSET walk1_crs_data, 1,140, 16,16>
 OBJECT <003h, 1024 SHL 16, 900 SHL 16,0, 0, 0, 32,2,2,  3,3,0, 0,0,0, 0, OFFSET en3_spr_data, OFFSET walk3_crs_data, 1,150, 16,16>
@@ -534,7 +530,7 @@ OBJECT <005h, 1024 SHL 16, 900 SHL 16,0, 0, 0, 32,3,3,  3,3,0, 0,0,0, 0, OFFSET 
 OBJECT <006h, 1024 SHL 16, 900 SHL 16,0, 0, 0, 32,3,3,  3,3,0, 0,0,0, 0, OFFSET en2_spr_data, OFFSET walk1_crs_data, 1,120, 16,16>
 OBJECT <007h, 1024 SHL 16, 900 SHL 16,0, 0, 0, 32,4,4,  5,5,0, 0,0,0, 0, OFFSET en4_spr_data, OFFSET walk4_crs_data, 1,100, 16,16>
 
-obj_type2       label  ; tank
+obj_type2       label  OBJECT; tank
 OBJECT <208h,  900 SHL 16,1000 SHL 16,0, 0, 0,  0,2,2,  2,2,0, 0,0,0, 0, OFFSET tank1_spr_data, OFFSET tank_crs_data, 1,80, 16,15>
 OBJECT <408h,  900 SHL 16,1000 SHL 16,0, 0, 0,  0,2,2,  0,0,0, 0,0,0, 0, OFFSET ttop1_spr_data, 0, 1,70, 16,10>
 OBJECT <209h, 1500 SHL 16, 950 SHL 16,0, 0, 0,  0,2,2,  2,2,0, 0,0,0, 0, OFFSET tank2_spr_data, OFFSET tank_crs_data, 1,80, 16,15>
@@ -542,21 +538,21 @@ OBJECT <409h, 1500 SHL 16, 950 SHL 16,0, 0, 0,  0,2,2,  0,0,0, 0,0,0, 0, OFFSET 
 OBJECT <20Ah, 1600 SHL 16, 900 SHL 16,0, 0, 0,  0,2,2,  1,1,0, 0,0,0, 0, OFFSET tank3_spr_data, OFFSET tank_crs_data, 1,90, 16, 9>
 OBJECT <40Ah, 1600 SHL 16, 900 SHL 16,0, 0, 0,  0,2,2,  0,0,0, 0,0,0, 0, OFFSET ttop3_spr_data, 0, 1,70, 16,15>
 
-flm_type        label
+flm_type        label  OBJECT
 OBJECT <101h, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,OFFSET flm1_spr_data, OFFSET flm1_crs_data, 1,0,0,0>
 OBJECT <102h, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,OFFSET flm2_spr_data, OFFSET flm2_crs_data, 1,0,0,0>
 OBJECT <103h, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,OFFSET flm3_spr_data, OFFSET flm3_crs_data, 1,0,0,0>
 OBJECT <104h, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,OFFSET flm4_spr_data, OFFSET flm4_crs_data, 1,0,0,0>
-dust_type       label
+dust_type       label  OBJECT
 OBJECT <105h, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,OFFSET dust1_spr_data, OFFSET dust1_crs_data, 1,0,0,0>
 
-chip_type       label
+chip_type       label  OBJECT
 OBJECT <104h, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,OFFSET chip1_spr_data, OFFSET chip1_crs_data, 1,0,0,0>
 OBJECT <105h, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,OFFSET chip2_spr_data, OFFSET chip2_crs_data, 1,0,0,0>
-smk_type        label
+smk_type        label  OBJECT
 OBJECT <106h, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,OFFSET smk1_spr_data, OFFSET smk1_crs_data, 1,0,0,0>
 
-bullet_type     label
+bullet_type     label  OBJECT
 OBJECT <502h, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,OFFSET flm1_spr_data, OFFSET blt1_crs_data, 1,4,0,0>
 OBJECT <503h, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,OFFSET flm1_spr_data, OFFSET blt1_crs_data, 1,25,0,0>
 
@@ -567,7 +563,7 @@ OBJECT <506h, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,OFFSET mine_spr_data, OFFSET blt2_cr
 OBJECT <507h, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,OFFSET flm1_spr_data, OFFSET missile1_crs_data, 1,80,0,0>
 OBJECT <508h, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,OFFSET flm1_spr_data, OFFSET missile1_crs_data, 1,60,0,0>
 
-target_type     label
+target_type     label  OBJECT
 OBJECT <800h, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1,                   0,                       0, 1, 1,0,0>
 
 walk1_crs_data  label   word
@@ -576,7 +572,7 @@ walk1_crs_data  label   word
 	dw      0, 1, 2, 3, 4, 5
 	dw      231
 	dd      2,walk3
-walk1   label
+walk1   label  byte
 	dw      232,0
 	dd      walkdead
 	dw      6, 7, 8, 9,10,11
@@ -584,14 +580,14 @@ walk1   label
 	dd      2,walk2
 	dw      _GOTO
 	dd      walk1_crs_data
-walk2   label
+walk2   label  byte
 	dw      232,0
 	dd      walkdead
 ;       dw      200,0
 	dw      12,13,14,15,16,17
 	dw      231
 	dd      1,walk1
-walk3   label
+walk3   label  byte
 	dw      232,0
 	dd      walkdead
 ;       dw      200,0
@@ -600,7 +596,7 @@ walk3   label
 	dd      1,walk1_crs_data
 	dw      _GOTO
 	dd      walk2
-walkdead        label
+walkdead        label  byte
 	dw      210,2
 	dw      24,-1
 
@@ -610,7 +606,7 @@ walk3_crs_data  label   word
 	dw      0, 1, 2, 3, 4, 5
 	dw      231
 	dd      2,walk31
-walk31  label
+walk31  label  byte
 	dw      232,0
 	dd      walkdead3
 	dw      6, 7, 8, 9, 10, 11
@@ -618,14 +614,14 @@ walk31  label
 	dd      2,walk32
 	dw      _GOTO
 	dd      walk3_crs_data
-walk32  label
+walk32  label  byte
 	dw      232,0
 	dd      walkdead3
 ;       dw      200,0
 	dw      0, 1, 2, 3, 4, 5
 	dw      231
 	dd      1,walk31
-walk33  label
+walk33  label  byte
 	dw      232,0
 	dd      walkdead3
 ;       dw      200,0
@@ -634,7 +630,7 @@ walk33  label
 	dd      1,walk3_crs_data
 	dw      _GOTO
 	dd      walk32
-walkdead3       label
+walkdead3       label  byte
 	dw      210,2
 	dw      12,-1
 
@@ -644,7 +640,7 @@ walk4_crs_data  label   word
 	dw      0, 1, 2, 3
 	dw      231
 	dd      2,walk41
-walk41  label
+walk41  label  byte
 	dw      232,0
 	dd      walkdead4
 	dw      4, 5, 6, 7
@@ -652,14 +648,14 @@ walk41  label
 	dd      2,walk42
 	dw      _GOTO
 	dd      walk4_crs_data
-walk42  label
+walk42  label  byte
 	dw      232,0
 	dd      walkdead4
 ;       dw      200,0
 	dw      8, 9, 10, 11
 	dw      231
 	dd      1,walk41
-walk43  label
+walk43  label  byte
 	dw      232,0
 	dd      walkdead4
 ;       dw      200,0
@@ -668,7 +664,7 @@ walk43  label
 	dd      1,walk4_crs_data
 	dw      _GOTO
 	dd      walk42
-walkdead4       label
+walkdead4       label  byte
 	dw      210,2
 	dw      16,-1
 
@@ -678,7 +674,7 @@ tank_crs_data   label   word
 	dd      tank00
 	dw      _GOTO
 	dd      tank_crs_data
-tank00  label
+tank00  label  byte
 	dw      210,2
 	dw      2,-1
 
@@ -747,77 +743,77 @@ _DATA   ENDS
 _BSS    SEGMENT PUBLIC USE32 DWORD 'BSS'
 
 obj_ptr         label   dword
-		dd      MAXOBJ dup(0)
-obj_table       label
-		db      MAXOBJ * OBJWID dup(0)
+		dd      MAXOBJ dup(?)
+obj_table       label   OBJECT
+		db      MAXOBJ * OBJWID dup(?)
 
-AP_stat         db      0
-bust_stat       db      0
-AP_frame        dd      0
-chit_god	dd	0
-chit_wep	dd	0
+AP_stat         db      ?
+bust_stat       db      ?
+AP_frame        dd      ?
+chit_god	dd	?
+chit_wep	dd	?
 
-dirmap  db      0,0,0,0,0,0,0,0
-MX      dd      0
-MY      dd      0
-MXS     dd      0
-MYS     dd      0
+dirmap  db      8 dup(?)
+MX      dd      ?
+MY      dd      ?
+MXS     dd      ?
+MYS     dd      ?
 
-obj_energy      dw      0
+obj_energy      dw      ?
 
 align 2
-xx      dw      0
+xx      dw      ?
 
-ey1     dw      0
-ey2     dw      0
+ey1     dw      ?
+ey2     dw      ?
 
-x1      dw      0
-y1      dw      0
-z1      dw      0
-x2      dw      0
-y2      dw      0
-z2      dw      0
+x1      dw      ?
+y1      dw      ?
+z1      dw      ?
+x2      dw      ?
+y2      dw      ?
+z2      dw      ?
 
 align 4
-xx_     dd      0
-yy_     dd      0
-zz_     dd      0
+xx_     dd      ?
+yy_     dd      ?
+zz_     dd      ?
 
-ey1_    dd      0
-ey2_    dd      0
+ey1_    dd      ?
+ey2_    dd      ?
 
-x1_     dd      0
-y1_     dd      0
-z1_     dd      0
-x2_     dd      0
-y2_     dd      0
-z2_     dd      0
+x1_     dd      ?
+y1_     dd      ?
+z1_     dd      ?
+x2_     dd      ?
+y2_     dd      ?
+z2_     dd      ?
 
-xa_     dd      0
-ya_     dd      0
+xa_     dd      ?
+ya_     dd      ?
 
-lstart  dd      0
+lstart  dd      ?
 
-sine    dw      0
-cosine  dw      0
+sine    dw      ?
+cosine  dw      ?
 
-sined   dd      0
-cosined dd      0
+sined   dd      ?
+cosined dd      ?
 
-flm_x_  dd      0
-flm_y_  dd      0
-flm_th  db      0
-flm_dir dw      0
-fire_d  dw      0
-f_range dw      0
+flm_x_  dd      ?
+flm_y_  dd      ?
+flm_th  db      ?
+flm_dir dw      ?
+fire_d  dw      ?
+f_range dw      ?
 
 seed    dd      ?
 
 ; frames per second
-Tstart  dw      0, 0
-Tend    dw      0, 0
-frames  dd      0
-fps     db      0, 0    ; frames per second
+Tstart  dw      ?, ?
+Tend    dw      ?, ?
+frames  dd      ?
+fps     db      ?, ?    ; frames per second
 
 ; keyboard interrupt vector save
 int09seg        dw      ?
@@ -895,18 +891,18 @@ _replay dd      ?
 
 SqrTable        dd      3000 dup(?)
 
-_SONGptr_       dd      0
+_SONGptr_       dd      ?
 
-file_number     db      0,0,0
+file_number     db      ?,?,?
 
-bullet_mem      db      0
+bullet_mem      db      ?
 
-total_enemy_num db      0
-kill_enemy_num  db      0
-target_destruction_counter      db      0
+total_enemy_num db      ?
+kill_enemy_num  db      ?
+target_destruction_counter      db      ?
 
-out_delay       db      0
-out_delay_flag  db      0
+out_delay       db      ?
+out_delay_flag  db      ?
 
 _BSS    ENDS
 
@@ -985,21 +981,10 @@ set_border Macro color
        out  dx,al
        EndM
 
-wait_key&time   MACRO   key,time
-	LOCAL   @@repeat,@@gogogo
-	mov     [_TimerTicks],0
-@@repeat:
-	cmp     key_hit,key
-	jnz     @@gogogo
-	mov     eax,[_TimerTicks]
-	cmp     eax,70*time
-	jb      @@repeat
-@@gogogo:
-	ENDM
 ;-------------------------------------------
 ;
 ;-------------------------------------------
-MakeSqrTable    PROC
+MakeSqrTable    PROC   PRIVATE
 
 	mov     ecx,0
 @@next:
@@ -1018,8 +1003,7 @@ MakeSqrTable    ENDP
 ;-------------------------------
 ;
 ;-------------------------------
-PUBLIC  FindSqrt_
-FindSqrt_       proc
+FindSqrt_       proc   PRIVATE
 
 	push    ebx
 	push    edx
@@ -1067,7 +1051,7 @@ FindSqrt_       endp
 ;-----------------------------------------
 ;
 ;-----------------------------------------
-FindTheta1      proc
+FindTheta1      proc   PRIVATE
 
 	push    ebx
 	push    edx
@@ -1112,7 +1096,7 @@ FindTheta1      proc
 
 FindTheta1      endp
 
-FindTheta2      proc
+FindTheta2      proc   PRIVATE
 
 	push    ebx
 	push    edx
@@ -1161,7 +1145,7 @@ FindTheta2      endp
 ;  eax :
 ;
 ;------------------------------------------
-make_DARKER_TABLE       PROC
+make_DARKER_TABLE       PROC   PRIVATE
 
 ;       mov     esi,OFFSET PAL
 ;       mov     edi,OFFSET DARKER_TABLE
@@ -1221,7 +1205,7 @@ make_DARKER_TABLE       ENDP
 ;---------------------------------------
 ;
 ;---------------------------------------
-init_obj_ptr    proc
+init_obj_ptr    proc   PRIVATE
 
 	mov     ecx,MAXOBJ
 	mov     eax,offset obj_table
@@ -1241,7 +1225,7 @@ init_obj_ptr    endp
 ;---------------------------------
 ;
 ;---------------------------------
-depth_sort      proc
+depth_sort      proc   PRIVATE
 
 	xor     esi,esi
 @@nbeam:
@@ -1249,9 +1233,9 @@ depth_sort      proc
 	inc     edi
 @@nobj:
 	mov     ebx,obj_ptr[esi*4]
-	mov     ax,[ebx].dis
+	mov     ax,[ebx.OBJECT.dis]
 	mov     ebp,obj_ptr[edi*4]
-	cmp     ax,[ebp].dis
+	cmp     ax,[ebp.OBJECT.dis]
 	jle     @@nchg
 	xchg    ebx,obj_ptr[edi*4]
 	mov     obj_ptr[esi*4],ebx
@@ -1271,7 +1255,7 @@ depth_sort      endp
 ;--------------------------------------
 ;
 ;--------------------------------------
-init_map        PROC
+init_map        PROC   PRIVATE
 
 	xor     ebx,ebx
 	mov     ecx,256*256
@@ -1308,7 +1292,7 @@ init_map        ENDP
 ;-------------------------------------------------
 ; save orignal key int. handler & set new handler
 ;-------------------------------------------------
-keyint_on       PROC
+keyint_on       PROC   PRIVATE
 
 	; key-intr. handler 09h
 	push    es                     ; save es
@@ -1333,7 +1317,7 @@ keyint_on       ENDP
 ;-----------------------------------
 ;  restore original key-int. vector
 ;-----------------------------------
-keyint_off      PROC
+keyint_off      PROC   PRIVATE
 
 	mov     ax,2509h               ; set int. vector ah = 25h
 	mov     edx,int09off           ; ds:edx
@@ -1347,7 +1331,7 @@ keyint_off      PROC
 
 keyint_off      ENDP
 
-clear_key_buffer        PROC
+clear_key_buffer        PROC   PRIVATE
 
 	mov     edi,OFFSET keyboard
 	mov     ecx,(128+128)/4 + 1
@@ -1364,7 +1348,7 @@ clear_key_buffer        ENDP
 ;---------------------------
 ; key-interrupt handler
 ;---------------------------
-newint09        PROC    far
+newint09        PROC    far   PRIVATE
 
 	push    es
 	push    eax                    ; save used reg.
@@ -1436,7 +1420,7 @@ newint09        ENDP
 ;------------------------------------
 ;
 ;------------------------------------
-AP_ani  PROC
+AP_ani  PROC   PRIVATE
 
 	test    AP_stat,BUST
 	jz      @@off
@@ -1573,7 +1557,7 @@ AP_ani  ENDP
 ;-------------------------------------------
 ;
 ;-------------------------------------------
-obj_course      proc
+obj_course      proc   PRIVATE
 
 	push    ebp
 
@@ -1581,11 +1565,11 @@ obj_course      proc
 	mov     ecx,MAXOBJ
 
 @@nexto:
-	cmp     [ebp].stat,0
+	cmp     curObj.stat,0
 	jz      @@here
 
 @@rcos:
-	mov     esi,[ebp].crs_pointer
+	mov     esi,curObj.crs_pointer
 	cmp     esi,0
 	je      @@here
 	cmp     esi,-1
@@ -1594,7 +1578,7 @@ obj_course      proc
 	movsx   eax,word ptr[esi]       ; sprite no
 	cmp     eax,-1                  ; end of course
 	jne     @@checkcos
-	mov     [ebp].crs_pointer,-1
+	mov     curObj.crs_pointer,-1
 	jmp     @@here
 
 @@checkcos:
@@ -1604,122 +1588,122 @@ obj_course      proc
 	sub     eax,200                 ; script course
 	jmp     CourseRoutine[eax * 4]  ;
 
-cos200:
+cos200::
 ;-----> SFX [200,SFX_no]
 ;------------------------------------------;
 	movzx   eax,word ptr[esi + 2]
 	call    SoundFX_
 
-	add     [ebp].crs_pointer,4
+	add     curObj.crs_pointer,4
 	jmp     @@rcos
 
-cos201:
-cos202:
+cos201::
+cos202::
 ;-----------> sprite No. change [202,no]
 ;-----------------------------------------;
 	movzx   eax,word ptr[esi + 2]
-	mov     [ebp].spr_no,eax
+	mov     curObj.spr_no,eax
 
-	add     [ebp].crs_pointer,4
+	add     curObj.crs_pointer,4
 	jmp     @@here
 
-cos203:
-cos204:
-cos205:
-cos206:
-cos207:
-cos208:
-cos209:
+cos203::
+cos204::
+cos205::
+cos206::
+cos207::
+cos208::
+cos209::
 ;-----------> kill obj.[209]
 ;-----------------------------------------;
-	mov     [ebp].stat,0
-	mov     eax,[ebp].obj_no
+	mov     curObj.stat,0
+	mov     eax,curObj.obj_no
 	shr     eax,8
 	cmp     eax,6h
 	jne     @@here
 	mov     holo_stat,0
 	jmp     @@here
 
-cos210:
+cos210::
 ;-----------> sprite No. change [210,no]
 ;-----------------------------------------;
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
 	movzx   eax,word ptr[esi + 2]
 	call    crea_flm
 
-	add     [ebp].crs_pointer,4
+	add     curObj.crs_pointer,4
 	jmp     @@rcos
-cos211:
-cos212:
-cos213:
-cos214:
-cos215:
-cos216:
-cos217:
-cos218:
-cos219:
-cos220:
-cos221:
-cos222:
-cos223:
-cos224:
-cos225:
-cos226:
-cos227:
-cos228:
-cos229:
+cos211::
+cos212::
+cos213::
+cos214::
+cos215::
+cos216::
+cos217::
+cos218::
+cos219::
+cos220::
+cos221::
+cos222::
+cos223::
+cos224::
+cos225::
+cos226::
+cos227::
+cos228::
+cos229::
 
 ;--------- JUMP STYLE COURSE ------------------;
 ;----------------------------------------------;
-cos230:
+cos230::
 ;------------> _GOTO [230,addr]
 ;----------------------------------------------;
 	mov     eax,dword ptr[esi + 2]
-	mov     [ebp].crs_pointer,eax
+	mov     curObj.crs_pointer,eax
 	jmp     @@rcos
 
-cos231:
+cos231::
 ;------------> _GOTO if stat EQU value [231,stat,addr]
 ;----------------------------------------------;
 	mov     eax,dword ptr[esi + 2]
-	cmp     eax,[ebp].stat
+	cmp     eax,curObj.stat
 	jne     @@nojump
 	mov     eax,dword ptr[esi + 6]
-	mov     [ebp].crs_pointer,eax
+	mov     curObj.crs_pointer,eax
 	jmp     @@rcos
 @@nojump:
-	add     [ebp].crs_pointer,10
+	add     curObj.crs_pointer,10
 	jmp     @@rcos
 
-cos232:
+cos232::
 ;------------> _GOTO if energy less or EQU [232,energy,addr]
 ;----------------------------------------------;
 	mov     ax,word ptr[esi + 2]
-	cmp     [ebp].energy,ax
+	cmp     curObj.energy,ax
 	jg      @@nojmp
 	mov     eax,dword ptr[esi + 4]
-	mov     [ebp].crs_pointer,eax
+	mov     curObj.crs_pointer,eax
 	jmp     @@rcos
 @@nojmp:
-	add     [ebp].crs_pointer,8
+	add     curObj.crs_pointer,8
 	jmp     @@rcos
 
-cos233:
-cos234:
-cos235:
-cos236:
-cos237:
-cos238:
-cos239:
+cos233::
+cos234::
+cos235::
+cos236::
+cos237::
+cos238::
+cos239::
 
 ;-------------------------------------------;
 ;----- NORMAL COURSE -----------------------;
 @@normal:
-	mov     [ebp].spr_no,eax
-	add     [ebp].crs_pointer,2
+	mov     curObj.spr_no,eax
+	add     curObj.crs_pointer,2
 
 @@here:
 	add     ebp,OBJWID
@@ -1735,7 +1719,7 @@ obj_course      endp
 ;-----------------------------------
 ;  main charactor moving direction
 ;-----------------------------------
-dirf    PROC
+dirf    PROC   PRIVATE
 
 	movzx   ebx,d_th                ;
 	shl     ebx,1                   ;
@@ -1814,15 +1798,15 @@ dirf    ENDP
 ;  object moving direction
 ; eax : object no
 ;-----------------------------------
-obj_dirf    PROC
+obj_dirf    PROC   PRIVATE
 
-	movzx   ebx,[ebp].mth           ;
+	movzx   ebx,curObj.mth           ;
 	shl     ebx,1                   ;
 	mov     ax,SIN[ebx]             ; sin(d_th)
 	movsx   eax,ax                  ;
 	mov     sined,eax               ;
 
-	mov     bl,[ebp].mth            ;
+	mov     bl,curObj.mth            ;
 	add     bl,64                   ;
 	movzx   ebx,bl                  ;
 	shl     ebx,1                   ;
@@ -1830,7 +1814,7 @@ obj_dirf    PROC
 	movsx   eax,ax                  ;
 	mov     cosined,eax             ;
 
-	mov     ax,[ebp].ddir           ; rx * cos(d_th)
+	mov     ax,curObj.ddir           ; rx * cos(d_th)
 	cmp     ax,0
 	jge     @@ppp
 
@@ -1838,27 +1822,27 @@ obj_dirf    PROC
 	neg     eax                     ;
 	imul    cosined                 ;
 	shld    edx,eax,17              ; rx * cos(d_th) / 32768
-	sub     [ebp].x_,edx              ;
+	sub     curObj.x_,edx              ;
 
-	mov     ax,[ebp].ddir           ;
+	mov     ax,curObj.ddir           ;
 	shl     eax,16                  ;
 	neg     eax                     ;
 	imul    sined                   ; rz * sin(d_th)
 	shld    edx,eax,17              ; rz * sin(d_th) / 32768
-	sub     [ebp].y_,edx              ;
+	sub     curObj.y_,edx              ;
 	jmp     @@mmm
 
 @@ppp:
 	shl     eax,16                  ;
 	imul    cosined                 ;
 	shld    edx,eax,17              ;rx * cos(d_th) / 32768
-	add     [ebp].x_,edx              ;
+	add     curObj.x_,edx              ;
 
-	mov     ax,[ebp].ddir           ;
+	mov     ax,curObj.ddir           ;
 	shl     eax,16                  ;
 	imul    sined                   ;rz * sin(d_th)
 	shld    edx,eax,17              ;rz * sin(d_th) / 32768
-	add     [ebp].y_,edx              ;
+	add     curObj.y_,edx              ;
 @@mmm:
 	ret
 
@@ -1867,17 +1851,17 @@ obj_dirf    ENDP
 ;-------------------------------
 ;  valcan of enemy
 ;-------------------------------
-obj_fire        PROC
+obj_fire        PROC   PRIVATE
 
 	push    ecx
-	push    [ebp].x_
-	push    [ebp].y_
-	push    [ebp].ddir
+	push    curObj.x_
+	push    curObj.y_
+	push    curObj.ddir
 
 ;;      test    frames,3
 ;;      jz      @@quit
 
-	mov     eax,[ebp].obj_no  ; if tank no fire
+	mov     eax,curObj.obj_no  ; if tank no fire
 	shr     eax,8             ;
 	cmp     eax,2             ;
 	je      @@quit            ;
@@ -1885,7 +1869,7 @@ obj_fire        PROC
 	cmp     eye_z,128+5
 	ja      @@quit
 
-	mov     ax,[ebp].dis
+	mov     ax,curObj.dis
 	cmp     ax,180
 	ja      @@quit
 
@@ -1898,18 +1882,18 @@ obj_fire        PROC
 	mov     bx,8
 	div     bx
 
-	mov     [ebp].ddir,8
+	mov     curObj.ddir,8
 
 	movzx   ecx,ax
 @@ntile:
 	call    obj_dirf
 
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	shr     eax,16+3
 	and     eax,255
 	shl     eax,8                   ;mapy * 256
 
-	mov     ebx,[ebp].x_
+	mov     ebx,curObj.x_
 	shr     ebx,16+3
 	and     ebx,255                 ;
 
@@ -1923,9 +1907,9 @@ obj_fire        PROC
 	jnz     @@ntile
 
 @@bingo:
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
 	mov     eax,0
 	call    crea_flm
@@ -1933,7 +1917,7 @@ obj_fire        PROC
 	mov     eax,_EXPLO0_
 	call    SoundFX_
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	sub     eax,eye_x_
 	shr     eax,16
 	cmp     ax,0
@@ -1943,7 +1927,7 @@ obj_fire        PROC
 	cmp     ax,10
 	ja      SHORT @@quit
 
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	sub     eax,eye_y_
 	shr     eax,16
 	cmp     ax,0
@@ -1961,9 +1945,9 @@ obj_fire        PROC
 	mov     AP_energy,0
 
 @@quit:
-	pop     [ebp].ddir
-	pop     [ebp].y_
-	pop     [ebp].x_
+	pop     curObj.ddir
+	pop     curObj.y_
+	pop     curObj.x_
 	pop     ecx
 
 	ret
@@ -1973,16 +1957,16 @@ obj_fire        ENDP
 ;------------------------------------------
 ;
 ;------------------------------------------
-fire_FFAR       PROC
+fire_FFAR       PROC   PRIVATE
 
-	cmp     [ebp].freem,0
+	cmp     curObj.freem,0
 	jnz     @@quit
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
-	mov     al,[ebp].theta
+	mov     al,curObj.theta
 	mov     flm_th,al
 	mov     flm_dir,8
 	mov     eax,5           ; FFAR missile
@@ -1992,37 +1976,37 @@ fire_FFAR       PROC
 	mov     eax,_FTHROW_
 	call    SoundFX_
 
-	mov     [ebp].freem,16
+	mov     curObj.freem,16
 @@quit:
 	ret
 
 fire_FFAR       ENDP
 
-fire_SHOT       PROC
+fire_SHOT       PROC   PRIVATE
 
-	cmp     [ebp].freem,0
+	cmp     curObj.freem,0
 	jnz     @@quit
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
 	mov     flm_dir,16
 
-	mov     al,[ebp].theta
+	mov     al,curObj.theta
 	mov     flm_th,al
 	mov     eax,0
 	mov     edx,302h        ; enemy fire
 	call    crea_bullet ;
 
-	mov     al,[ebp].theta
+	mov     al,curObj.theta
 	add     al,2
 	mov     flm_th,al
 	mov     eax,0
 	mov     edx,302h        ; enemy fire
 	call    crea_bullet ;
 
-	mov     al,[ebp].theta
+	mov     al,curObj.theta
 	sub     al,2
 	mov     flm_th,al
 	mov     eax,0
@@ -2032,7 +2016,7 @@ fire_SHOT       PROC
 	mov     eax,_SGUNSH_
 	call    SoundFX_
 
-	mov     [ebp].freem,8
+	mov     curObj.freem,8
 @@quit:
 	ret
 
@@ -2041,11 +2025,11 @@ fire_SHOT       ENDP
 ;----------------------------
 ;
 ;----------------------------
-all_demage      PROC
+all_demage      PROC   PRIVATE
 
 	pushad
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	shr     eax,16+3
 	and     eax,255
 	mov     MX,eax
@@ -2054,7 +2038,7 @@ all_demage      PROC
 	mov     ecx,10
 @@nextX:
 
-	mov     ebx,[ebp].y_
+	mov     ebx,curObj.y_
 	shr     ebx,16+3
 	and     ebx,255
 	mov     MY,ebx
@@ -2097,7 +2081,7 @@ all_demage      ENDP
 ;-----------------------------------
 ; object moving
 ;-----------------------------------
-obj_move    PROC
+obj_move    PROC   PRIVATE
 
 	push    ebp
 
@@ -2105,62 +2089,62 @@ obj_move    PROC
 
 	mov     ecx,MAXOBJ
 @nexto_:
-	cmp     [ebp].stat,0            ; 0 or -1
+	cmp     curObj.stat,0            ; 0 or -1
 	jg      @@proced_                   ;
 
-	cmp     [ebp].obj_no,800h
+	cmp     curObj.obj_no,800h
 	je      @@goon
 	jmp     @nnn_
 
 @@proced_:
-	cmp     [ebp].obj_no,508h
+	cmp     curObj.obj_no,508h
 	je      @@goon
-	sub     [ebp].freem,1
+	sub     curObj.freem,1
 	jnc     @@goon
-	mov     [ebp].freem,0
+	mov     curObj.freem,0
 @@goon:
 
-	mov     eax,[ebp].obj_no
+	mov     eax,curObj.obj_no
 	shr     eax,8
 	jmp     ObjMoveRoutine[eax*4]
 
 	;--------------------------
 	;   enemy AI routine
 	;--------------------------
-omr02:  ; TANK
+omr02::  ; TANK
 	add     ebp,OBJWID
-	cmp     [ebp].stat,0    ; if has no top
+	cmp     curObj.stat,0    ; if has no top
 	jz      SHORT @@smoke   ; create smoke
 	sub     ebp,OBJWID
 	jmp     SHORT omr00
 @@smoke:
 	sub     ebp,OBJWID
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
 	mov     eax,4
 	call    crea_flm
 
-omr00:
-	cmp     [ebp].energy,0
+omr00::
+	cmp     curObj.energy,0
 	jle     @@kill2
-	cmp     [ebp].dis,300
+	cmp     curObj.dis,300
 	ja      @nnn1_
-	push    [ebp].x_
-	push    [ebp].y_
+	push    curObj.x_
+	push    curObj.y_
 
-	mov     ax,[ebp].dspeed
-	mov     [ebp].ddir,ax
+	mov     ax,curObj.dspeed
+	mov     curObj.ddir,ax
 
 	call    obj_dirf
 
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	shr     eax,16+3
 	and     eax,255
 	shl     eax,8                   ;mapy * 256
 
-	mov     ebx,[ebp].x_
+	mov     ebx,curObj.x_
 	shr     ebx,16+3
 	and     ebx,255                 ;
 
@@ -2174,15 +2158,15 @@ omr00:
 	;  forward moving impossible
 	;--------------------------
 	;
-	pop     [ebp].y_
-	pop     [ebp].x_
+	pop     curObj.y_
+	pop     curObj.x_
 
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	shr     eax,16+3
 	and     eax,255
 	shl     eax,8                   ;mapy * 256
 
-	mov     ebx,[ebp].x_
+	mov     ebx,curObj.x_
 	shr     ebx,16+3
 	and     ebx,255                 ;
 
@@ -2192,7 +2176,7 @@ omr00:
 	mov     ax,DIRECTION_MAP[eax*2] ;
 
 	push    ecx                     ; check turn right
-	mov     cl,[ebp].mth            ;
+	mov     cl,curObj.mth            ;
 	shr     cl,4                    ;
 
 	add     cl,4                    ;
@@ -2210,7 +2194,7 @@ omr00:
 
 
 	push    ecx                     ; check turn left
-	mov     cl,[ebp].mth            ;
+	mov     cl,curObj.mth            ;
 	shr     cl,4                    ;
 
 	add     cl,4                    ;
@@ -2224,35 +2208,35 @@ omr00:
 	jnz     SHORT @@rrr             ;
 
 @@lll:
-	mov     [ebp].ddir,0
+	mov     curObj.ddir,0
 
-;       cmp     [ebp].dmth,0
+;       cmp     curObj.dmth,0
 ;       jl      SHORT @@yyy
 
-;       mov     al,[ebp].dth
-;       mov     [ebp].dmth,al
+;       mov     al,curObj.dth
+;       mov     curObj.dmth,al
 ;       jmp     SHORT @@add
 @@yyy:
-	mov     al,[ebp].dth
+	mov     al,curObj.dth
 	neg     al
-	mov     [ebp].dmth,al
+	mov     curObj.dmth,al
 @@add:
-	mov     al,[ebp].dmth
-	add     [ebp].mth,al
+	mov     al,curObj.dmth
+	add     curObj.mth,al
 
-	mov     [ebp].stat,1
+	mov     curObj.stat,1
 	jmp     @nnn_
   ;--------------------
 @@rrr:
-	mov     [ebp].ddir,0
+	mov     curObj.ddir,0
 
-	mov     al,[ebp].dth
-	mov     [ebp].dmth,al
+	mov     al,curObj.dth
+	mov     curObj.dmth,al
 @@add1:
-	mov     al,[ebp].dmth
-	add     [ebp].mth,al
+	mov     al,curObj.dmth
+	add     curObj.mth,al
 
-	mov     [ebp].stat,1
+	mov     curObj.stat,1
 	jmp     @nnn_
 
 	;--------------------------
@@ -2261,40 +2245,40 @@ omr00:
 	;--------------------------
 @@ggg:
 	mov     ax,0
-	cmp     [ebp].dis,60
+	cmp     curObj.dis,60
 	ja      SHORT @@skip0
-	cmp     [ebp].energy,30
+	cmp     curObj.energy,30
 	jle     SHORT @@skip0
 
-	pop     [ebp].y_
-	pop     [ebp].x_
+	pop     curObj.y_
+	pop     curObj.x_
 	mov     ax,0
 	jmp     SHORT @@skip1
 
 @@skip0:
 	pop     eax
 	pop     eax
-	mov     ax,[ebp].dspeed
+	mov     ax,curObj.dspeed
 
 @@skip1:
-	mov     [ebp].ddir,ax
+	mov     curObj.ddir,ax
 
-	mov     [ebp].dmth,0
+	mov     curObj.dmth,0
 
-	mov     al,[ebp].theta
-	sub     al,[ebp].mth
+	mov     al,curObj.theta
+	sub     al,curObj.mth
 	jz      @@chk00
 	ja      SHORT @@pp
 	cmp     al,128
 	jb      @@pp
 @@mm:
-	mov     [ebp].stat,1
+	mov     curObj.stat,1
 
 	cmp     al,-4
 	jl      @@nofirem
 
-	mov     [ebp].stat,2
-	mov     eax,[ebp].obj_no
+	mov     curObj.stat,2
+	mov     eax,curObj.obj_no
 	and     eax,0FFh
 	cmp     eax,2
 	je      @FFAR__
@@ -2315,31 +2299,31 @@ omr00:
 
 @@nofirem:
 
-	mov     al,[ebp].dth
+	mov     al,curObj.dth
 	neg     al
-	mov     [ebp].dmth,al
+	mov     curObj.dmth,al
 
-	cmp     [ebp].energy,30
+	cmp     curObj.energy,30
 	jge     SHORT @@norun1
 
-	mov     al,[ebp].dth
-	mov     [ebp].dmth,al
+	mov     al,curObj.dth
+	mov     curObj.dmth,al
 
 @@norun1:
-	mov     al,[ebp].dmth
-	add     [ebp].mth,al
+	mov     al,curObj.dmth
+	add     curObj.mth,al
 
 	jmp     @nnn_
 
 @@pp:
 	cmp     al,128
 	jae     @@mm
-	mov     [ebp].stat,1
+	mov     curObj.stat,1
 	cmp     al,4
 	jg      @@nofirep
 
-	mov     [ebp].stat,2
-	mov     eax,[ebp].obj_no
+	mov     curObj.stat,2
+	mov     eax,curObj.obj_no
 	and     eax,0FFh
 	cmp     eax,2
 	je      @FFAR_
@@ -2359,26 +2343,26 @@ omr00:
 	call    fire_SHOT
 
 @@nofirep:
-	mov     al,[ebp].dth
-	mov     [ebp].dmth,al
+	mov     al,curObj.dth
+	mov     curObj.dmth,al
 
-	cmp     [ebp].energy,30
+	cmp     curObj.energy,30
 	jge     SHORT @@norun2
 
-	mov     al,[ebp].dth
+	mov     al,curObj.dth
 	neg     al
-	mov     [ebp].dmth,al
+	mov     curObj.dmth,al
 
 @@norun2:
-	mov     al,[ebp].dmth
-	add     [ebp].mth,al
+	mov     al,curObj.dmth
+	add     curObj.mth,al
 	jmp     @nnn_
 
 
 @@chk00:
-	mov     [ebp].stat,2            ; FIRE!!
+	mov     curObj.stat,2            ; FIRE!!
 
-	mov     eax,[ebp].obj_no
+	mov     eax,curObj.obj_no
 	and     eax,0FFh
 	cmp     eax,2
 	je      @FFAR
@@ -2401,42 +2385,42 @@ omr00:
 	;--------------------------
 	;    TANK TOP
 	;--------------------------
-omr04:
-	cmp     [ebp].energy,0
+omr04::
+	cmp     curObj.energy,0
 	jle     @@kill
 
 	sub     ebp,OBJWID
-	cmp     [ebp].energy,0
+	cmp     curObj.energy,0
 	jg      @@proced
 
 	add     ebp,OBJWID
 	jmp     @@kill
 
 @@proced:
-	push    [ebp].x_
-	push    [ebp].y_
+	push    curObj.x_
+	push    curObj.y_
 
 	add     ebp,OBJWID
-	pop     [ebp].y_
-	pop     [ebp].x_
+	pop     curObj.y_
+	pop     curObj.x_
 
-	mov     al,[ebp].theta
+	mov     al,curObj.theta
 	add     al,128
-	mov     [ebp].mth,al
+	mov     curObj.mth,al
 
 	mov     eax,frames
 	and     eax,15
 	jnz     @nnn_
 
-	mov     ax,[ebp].dis
+	mov     ax,curObj.dis
 	cmp     ax,180
 	ja      @nnn_
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
-	mov     al,[ebp].theta
+	mov     al,curObj.theta
 	mov     flm_th,al
 	mov     flm_dir,16
 	mov     eax,1
@@ -2449,31 +2433,31 @@ omr04:
 	jmp     @nnn_
 
 @@kill:
-	mov     [ebp].stat,0   ; tank top
+	mov     curObj.stat,0   ; tank top
 	jmp     SHORT @@kill3
 @@kill2:
 	add     kill_enemy_num,1
-	mov     eax,[ebp].obj_no
+	mov     eax,curObj.obj_no
 	and     eax,0FFh
 	dec     eax
 	movzx   ax,enemy_gold[eax]
 	add     enemy_score,ax
 
-	mov     [ebp].stat,-1
+	mov     curObj.stat,-1
 @@kill3:
 	mov     eax,_EXPLO2_
 	call    SoundFX_
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
 	mov     eax,1
 	call    crea_flm
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
 
 	mov     flm_th,0
@@ -2498,14 +2482,14 @@ omr04:
 	;-------------------------
 	; bullet of enemy
 	;-------------------------
-omr03:
-	cmp     [ebp].dis,300
+omr03::
+	cmp     curObj.dis,300
 	ja      @@godir
 
 	cmp     eye_z,128+5
 	ja      @@godir
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	sub     eax,eye_x_
 	shr     eax,16
 	cmp     ax,0
@@ -2515,7 +2499,7 @@ omr03:
 	cmp     ax,10
 	ja      SHORT @@tilechk
 
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	sub     eax,eye_y_
 	shr     eax,16
 	cmp     ax,0
@@ -2529,7 +2513,7 @@ omr03:
 
 	cmp	chit_god,1
 	je	@@boom
-	movzx   eax,[ebp].energy
+	movzx   eax,curObj.energy
 	sub     AP_energy,eax
 	jnc     @@boom
 	mov     AP_energy,0
@@ -2537,10 +2521,10 @@ omr03:
 	jmp     @@boom
 
 @@tilechk:
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	shr     eax,16+3
 	and     eax,255
-	mov     ebx,[ebp].y_
+	mov     ebx,curObj.y_
 	shr     ebx,16+3
 	and     ebx,255
 	shl     ebx,8
@@ -2557,11 +2541,11 @@ omr03:
 ;;      mov     ebx,TEXMAPADD2[eax*4]
 	mov     TEXMAPADD[eax*4],ebx
 
-	mov     [ebp].stat,0
+	mov     curObj.stat,0
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
 	mov     eax,1
 	call    crea_flm
@@ -2575,21 +2559,21 @@ omr03:
 	;--------------------
 	;  bullet of AP
 	;--------------------
-omr05   PROC
+omr05   PROC   PRIVATE
 
-	cmp     [ebp].obj_no,504h       ; time bomb
+	cmp     curObj.obj_no,504h       ; time bomb
 	je      omr504
 
-	mov     eax,[ebp].obj_no
+	mov     eax,curObj.obj_no
 	and     eax,0FFh
 	mov     ax,weapon_range[eax*2]
 	mov     f_range,ax
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	shr     eax,16+3
 	and     eax,255
 
-	mov     ebx,[ebp].y_
+	mov     ebx,curObj.y_
 	shr     ebx,16+3
 	and     ebx,255
 	shl     ebx,8
@@ -2606,11 +2590,11 @@ omr05   PROC
 ;;      mov     ebx,TEXMAPADD2[eax*4]
 	mov     TEXMAPADD[eax*4],ebx
 
-	mov     [ebp].stat,0
+	mov     curObj.stat,0
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
 	mov     eax,1
 	call    crea_flm
@@ -2621,21 +2605,21 @@ omr05   PROC
 	push    ebp
 	push    ecx
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     obj_x_,eax
 
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     obj_y_,eax
 
-	mov     ax,[ebp].energy
+	mov     ax,curObj.energy
 	mov     obj_energy,ax
 
 	xor     ecx,ecx
 @@nexto_:
 	mov     ebp,obj_ptr[ecx*4]
-	cmp     [ebp].stat,0
+	cmp     curObj.stat,0
 	jle     @@nchk
-	mov     eax,[ebp].obj_no
+	mov     eax,curObj.obj_no
 	shr     eax,8
 	cmp     eax,1h
 	je      @@nchk
@@ -2645,10 +2629,10 @@ omr05   PROC
 	je      @@nchk
 	cmp     eax,6h
 	je      @@nchk
-	cmp     [ebp].obj_no,800h
+	cmp     curObj.obj_no,800h
 	je      @@nchk
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	sub     eax,obj_x_
 	shr     eax,16
 	cmp     ax,0
@@ -2658,7 +2642,7 @@ omr05   PROC
 	cmp     ax,f_range
 	ja      SHORT @@nchk
 
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	sub     eax,obj_y_
 	shr     eax,16
 	cmp     ax,0
@@ -2669,14 +2653,14 @@ omr05   PROC
 	ja      SHORT @@nchk
 
 	mov     ax,obj_energy
-	sub     [ebp].energy,ax
-	cmp     [ebp].energy,0
+	sub     curObj.energy,ax
+	cmp     curObj.energy,0
 	jge     SHORT @@no0
-	mov     [ebp].energy,0
+	mov     curObj.energy,0
 @@no0:
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
 	mov     eax,1
 	call    crea_flm
@@ -2699,53 +2683,53 @@ omr05   PROC
 	pop     ecx
 	pop     ebp
 
-	mov     [ebp].stat,0
+	mov     curObj.stat,0
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
 	mov     eax,2
 	call    crea_flm
 
 @@gogodir:
-	mov     eax,[ebp].obj_no
+	mov     eax,curObj.obj_no
 	cmp     eax,508h         ;; guided missile
 	jne     @@__dirf
 
-	movzx   eax,[ebp].freem
+	movzx   eax,curObj.freem
 	cmp     al,-1
 	je      @@__dirf
 	imul    eax,OBJWID
 	add     eax,OFFSET obj_table
 	mov     ebx,eax
 
-	mov     eax,[ebx].x_
+	mov     eax,[ebx.OBJECT].x_
 	mov     obj_x_,eax
-	mov     eax,[ebx].y_
+	mov     eax,[ebx.OBJECT].y_
 	mov     obj_y_,eax
 
 	mov     eax,obj_x_
-	sub     eax,[ebp].x_
+	sub     eax,curObj.x_
 	sar     eax,16
 	imul    eax,eax
 
 	mov     ebx,obj_y_
-	sub     ebx,[ebp].y_
+	sub     ebx,curObj.y_
 	sar     ebx,16
 	imul    ebx,ebx
 	add     eax,ebx
 
 	call    FindSqrt_
 
-	mov     [ebp].dis,ax
+	mov     curObj.dis,ax
 
 	mov     eax,obj_x_
-	sub     eax,[ebp].x_
+	sub     eax,curObj.x_
 	sar     eax,16
 
 	mov     ebx,obj_y_
-	sub     ebx,[ebp].y_
+	sub     ebx,curObj.y_
 	sar     ebx,16
 
 	cmp     ebx,0
@@ -2753,30 +2737,30 @@ omr05   PROC
 @@1:
 	mov     ebx,32767
 	imul    ebx
-	movzx   ebx,[ebp].dis
+	movzx   ebx,curObj.dis
 	idiv    ebx
 	call    FindTheta1
-	mov     [ebp].theta,al
+	mov     curObj.theta,al
 	jmp     SHORT @@3
 @@2:
 	mov     ebx,32767
 	imul    ebx
-	movzx   ebx,[ebp].dis
+	movzx   ebx,curObj.dis
 	idiv    ebx
 	call    FindTheta2
-	mov     [ebp].theta,al
+	mov     curObj.theta,al
 @@3:
-	mov     al,[ebp].theta
-	sub     al,[ebp].mth
+	mov     al,curObj.theta
+	sub     al,curObj.mth
 	jz      @@__dirf
 	cmp     al,128
 	ja      @@__mmm
 	jb      @@__ppp
 @@__mmm:
-	add     [ebp].mth,-4
+	add     curObj.mth,-4
 	jmp     SHORT @@__dirf
 @@__ppp:
-	add     [ebp].mth,4
+	add     curObj.mth,4
 
 @@__dirf:
 	call    obj_dirf
@@ -2789,31 +2773,31 @@ omr05   ENDP
 	;-------------------
 	; Time Bomb
 	;-------------------
-omr504  PROC
+omr504  PROC   PRIVATE
 
 	mov     f_range,50
-	cmp     [ebp].freem,0
+	cmp     curObj.freem,0
 	jg      @nnn_
 
 	push    ebp
 	push    ecx
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     obj_x_,eax
 
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     obj_y_,eax
 
-	mov     ax,[ebp].energy
+	mov     ax,curObj.energy
 	mov     obj_energy,ax
-	mov     [ebp].energy,0
+	mov     curObj.energy,0
 
 	xor     ecx,ecx
 @@nexto_:
 	mov     ebp,obj_ptr[ecx*4]
-	cmp     [ebp].stat,0
+	cmp     curObj.stat,0
 	jle     @@nchk
-	mov     eax,[ebp].obj_no
+	mov     eax,curObj.obj_no
 	shr     eax,8
 	cmp     eax,1h
 	je      @@nchk
@@ -2824,7 +2808,7 @@ omr504  PROC
 	cmp     eax,6h
 	je      @@nchk
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	sub     eax,obj_x_
 	shr     eax,16
 	cmp     ax,0
@@ -2834,7 +2818,7 @@ omr504  PROC
 	cmp     ax,f_range
 	ja      SHORT @@nchk
 
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	sub     eax,obj_y_
 	shr     eax,16
 	cmp     ax,0
@@ -2845,14 +2829,14 @@ omr504  PROC
 	ja      SHORT @@nchk
 
 	mov     ax,obj_energy
-	sub     [ebp].energy,ax
-	cmp     [ebp].energy,0
+	sub     curObj.energy,ax
+	cmp     curObj.energy,0
 	jge     SHORT @@no0
-	mov     [ebp].energy,0
+	mov     curObj.energy,0
 @@no0:
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
 	mov     eax,2
 	call    crea_flm
@@ -2865,11 +2849,11 @@ omr504  PROC
 	pop     ecx
 	pop     ebp
 
-	mov     [ebp].stat,0
+	mov     curObj.stat,0
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
 	mov     eax,2
 	call    crea_flm
@@ -2881,31 +2865,31 @@ omr504  ENDP
 	;-------------------
 	; Hologram Mine
 	;-------------------
-omr06   PROC              ;; hologram mine
+omr06   PROC   PRIVATE
 
 	mov     f_range,80
-	cmp     [ebp].freem,0
+	cmp     curObj.freem,0
 	jg      @nnn_
 
 	push    ebp
 	push    ecx
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     obj_x_,eax
 
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     obj_y_,eax
 
-	mov     ax,[ebp].energy
+	mov     ax,curObj.energy
 	mov     obj_energy,ax
-	mov     [ebp].energy,0
+	mov     curObj.energy,0
 
 	xor     ecx,ecx
 @@nexto_:
 	mov     ebp,obj_ptr[ecx*4]
-	cmp     [ebp].stat,0
+	cmp     curObj.stat,0
 	jle     @@nchk
-	mov     eax,[ebp].obj_no
+	mov     eax,curObj.obj_no
 	shr     eax,8
 	cmp     eax,1h
 	je      @@nchk
@@ -2915,10 +2899,10 @@ omr06   PROC              ;; hologram mine
 	je      @@nchk
 	cmp     eax,6h
 	je      @@nchk
-	cmp     [ebp].obj_no,800h
+	cmp     curObj.obj_no,800h
 	je      @@nchk
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	sub     eax,obj_x_
 	shr     eax,16
 	cmp     ax,0
@@ -2928,7 +2912,7 @@ omr06   PROC              ;; hologram mine
 	cmp     ax,f_range
 	ja      SHORT @@nchk
 
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	sub     eax,obj_y_
 	shr     eax,16
 	cmp     ax,0
@@ -2939,14 +2923,14 @@ omr06   PROC              ;; hologram mine
 	ja      SHORT @@nchk
 
 	mov     ax,obj_energy
-	sub     [ebp].energy,ax
-	cmp     [ebp].energy,0
+	sub     curObj.energy,ax
+	cmp     curObj.energy,0
 	jge     SHORT @@no0
-	mov     [ebp].energy,0
+	mov     curObj.energy,0
 @@no0:
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
 	mov     eax,2
 	call    crea_flm
@@ -2959,13 +2943,13 @@ omr06   PROC              ;; hologram mine
 	pop     ecx
 	pop     ebp
 
-	mov     [ebp].stat,0
+	mov     curObj.stat,0
 
 	mov     holo_stat,0
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
 	mov     eax,2
 	call    crea_flm
@@ -2977,15 +2961,15 @@ omr06   ENDP
 	;--------------------
 	;  target
 	;--------------------
-omr08:
-	cmp     [ebp].energy,0
+omr08::
+	cmp     curObj.energy,0
 	jg      omr01
 
-	cmp     [ebp].stat,-1
+	cmp     curObj.stat,-1
 	je      @@creasmk
 
 	inc     target_destruction_counter
-	mov     [ebp].stat,-1
+	mov     curObj.stat,-1
 
 	mov     eax,_EXPLO0_
 	call    SoundFX_
@@ -3001,9 +2985,9 @@ omr08:
 	test    frames,1
 	jnz     SHORT @nnn_
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
 
 	mov     eax,frames
@@ -3015,14 +2999,14 @@ omr08:
 	jmp     SHORT @nnn_
 
 
-omr01:
+omr01::
 	call    obj_dirf
 	jmp     SHORT @nnn_
 
 @nnn1_:
-	mov     [ebp].stat,1            ; No fire!
+	mov     curObj.stat,1            ; No fire!
 
-@nnn_:
+@nnn_::
 	add     ebp,OBJWID
 	dec     ecx
 	jnz     @nexto_
@@ -3035,7 +3019,7 @@ obj_move    ENDP
 ;-----------------------------------
 ;
 ;-----------------------------------
-AP_move PROC
+AP_move PROC   PRIVATE
 
 	cmp     eye_z,128+5
 	jle     SHORT @@chk
@@ -3167,7 +3151,7 @@ AP_move ENDP
 ;------------------------------------------
 ;
 ;------------------------------------------
-AP_fire PROC
+AP_fire PROC   PRIVATE
 
 	cmp     eye_z,128+5
 	ja      @@quit
@@ -3184,12 +3168,12 @@ AP_fire PROC
 	mov     eax,weapon_no
 	jmp     FireRoutine[eax*4]
 
-APW02:  ; shot gun
-APW03:  ; utan
+APW02::  ; shot gun
+APW03::  ; utan
 	mov     eax,_SGUNSH_
 	call    SoundFX_
 	jmp     SHORT @@samething
-APW07:
+APW07::
 	mov     eax,_FTHROW_
 	call    SoundFX_
 @@samething:
@@ -3235,7 +3219,7 @@ APW07:
 
 	;-----------------
 	;
-APW08:  ; guided misssile
+APW08::  ; guided misssile
 	;
 	;-----------------
 	mov     eax,_FTHROW_
@@ -3247,12 +3231,12 @@ APW08:  ; guided misssile
 
 	mov     ebp,obj_ptr[ecx*4]
 
-	cmp     [ebp].stat,0
+	cmp     curObj.stat,0
 	jle     @@nnn_
-	test    [ebp].obj_no,100h
+	test    curObj.obj_no,100h
 	jnz     @@nnn_
 
-	mov     al,[ebp].theta
+	mov     al,curObj.theta
 	add     al,128
 	sub     al,d_th
 	cmp     al,0
@@ -3301,12 +3285,12 @@ APW08:  ; guided misssile
 
 	jmp     @@quit
 
-APW04:
-APW06:
+APW04::
+APW06::
 	mov     edx,500h
 	jmp     SHORT APW051
 
-APW05:  ; Hologram mine
+APW05::  ; Hologram mine
 	mov     edx,600h
 	mov     eax,eye_x_
 	mov     holo_x_,eax
@@ -3331,11 +3315,11 @@ APW051:
 
 	jmp     @@quit
 
-APW00:
+APW00::
 	mov     eax,_VALCAN_
 	call    SoundFX_
 	jmp     SHORT @@APW011
-APW01:
+APW01::
 	mov     eax,_MGUN_
 	call    SoundFX_
 @@APW011:
@@ -3422,19 +3406,19 @@ APW01:
 
 	mov     ebp,obj_ptr[ebp*4]
 
-	cmp     [ebp].stat,0
+	cmp     curObj.stat,0
 	jle     @@nnn
-	cmp     [ebp].energy,0
+	cmp     curObj.energy,0
 	jle     @@nnn
-	test    [ebp].obj_no,100h
+	test    curObj.obj_no,100h
 	jnz     @@nnn
-	cmp     [ebp].dis,190
+	cmp     curObj.dis,190
 	ja      @@nnn
 	mov     ax,fire_d
-	cmp     [ebp].dis,ax
+	cmp     curObj.dis,ax
 	ja      @@nnn
 
-	mov     al,[ebp].theta
+	mov     al,curObj.theta
 	add     al,128
 	sub     al,d_th
 	cmp     al,0
@@ -3450,17 +3434,17 @@ APW01:
 
 	mov     eax,weapon_no
 	mov     ax,weapon_power[eax*2]
-	sub     [ebp].energy,ax
-	cmp     [ebp].energy,0
+	sub     curObj.energy,ax
+	cmp     curObj.energy,0
 	jge     SHORT @@no00
-	mov     [ebp].energy,0
+	mov     curObj.energy,0
 @@no00:
 
-	mov     [ebp].ddir,0
+	mov     curObj.ddir,0
 
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 	mov     flm_x_,eax
-	mov     eax,[ebp].y_
+	mov     eax,curObj.y_
 	mov     flm_y_,eax
 
 	mov     eax,frames
@@ -3498,7 +3482,7 @@ AP_fire ENDP
 ;---------------------------------------
 ; eax : flm type no
 ;---------------------------------------
-crea_flm        PROC
+crea_flm        PROC   PRIVATE
 
 	push    ebp
 	push    ecx
@@ -3513,10 +3497,10 @@ crea_flm        PROC
 
 	mov     ecx,MAXOBJ
 @@nexto:
-	cmp     [ebp].stat,0
+	cmp     curObj.stat,0
 	jnz     @@nnn
 
-	mov     eax,[ebp].obj_no
+	mov     eax,curObj.obj_no
 	shr     eax,8
 	cmp     eax,4h
 	je      @@nnn
@@ -3530,11 +3514,11 @@ crea_flm        PROC
 	pop     ecx
 
 	mov     eax,flm_x_
-	mov     [ebp].x_,eax
+	mov     curObj.x_,eax
 	mov     eax,flm_y_
-	mov     [ebp].y_,eax
+	mov     curObj.y_,eax
 
-	mov     [ebp].stat,1
+	mov     curObj.stat,1
 
 	jmp     @@out
 
@@ -3557,7 +3541,7 @@ crea_flm        ENDP
 ; eax : chip type no
 ;
 ;---------------------------------------
-crea_chip       PROC
+crea_chip       PROC   PRIVATE
 
 	push    ebp
 	push    ecx
@@ -3572,10 +3556,10 @@ crea_chip       PROC
 
 	mov     ecx,MAXOBJ
 @@nexto:
-	cmp     [ebp].stat,0
+	cmp     curObj.stat,0
 	jnz     @@nnn
 
-	mov     eax,[ebp].obj_no
+	mov     eax,curObj.obj_no
 	shr     eax,8
 	cmp     eax,4h
 	je      @@nnn
@@ -3589,17 +3573,17 @@ crea_chip       PROC
 	pop     ecx
 
 	mov     eax,flm_x_
-	mov     [ebp].x_,eax
+	mov     curObj.x_,eax
 	mov     eax,flm_y_
-	mov     [ebp].y_,eax
+	mov     curObj.y_,eax
 	mov     al,flm_th
-	mov     [ebp].mth,al
+	mov     curObj.mth,al
 	mov     ax,flm_dir
-	mov     [ebp].ddir,ax
+	mov     curObj.ddir,ax
 ;       mov     ax,power
-;       mov     [ebp].energy,ax
+;       mov     curObj.energy,ax
 
-	mov     [ebp].stat,1
+	mov     curObj.stat,1
 
 	jmp     @@out
 
@@ -3622,7 +3606,7 @@ crea_chip       ENDP
 ; eax : bullet type no
 ; edx : enemy or AP    300h or 500h
 ;---------------------------------------
-crea_bullet     PROC
+crea_bullet     PROC   PRIVATE
 
 	push    ebp
 	push    ecx
@@ -3639,10 +3623,10 @@ crea_bullet     PROC
 
 	mov     ecx,MAXOBJ
 @@nexto:
-	cmp     [ebp].stat,0
+	cmp     curObj.stat,0
 	jnz     @@nnn
 
-	mov     eax,[ebp].obj_no
+	mov     eax,curObj.obj_no
 	shr     eax,8
 	cmp     eax,4h
 	je      @@nnn
@@ -3655,23 +3639,23 @@ crea_bullet     PROC
 	rep     movsb
 	pop     ecx
 
-	cmp     [ebp].obj_no,508h       ;; guided missile
+	cmp     curObj.obj_no,508h       ;; guided missile
 	jne     @@skiiip
 	mov     al,bullet_mem
-	mov     [ebp].freem,al
+	mov     curObj.freem,al
 @@skiiip:
 	mov     eax,flm_x_
-	mov     [ebp].x_,eax
+	mov     curObj.x_,eax
 	mov     eax,flm_y_
-	mov     [ebp].y_,eax
+	mov     curObj.y_,eax
 	mov     al,flm_th
-	mov     [ebp].mth,al
+	mov     curObj.mth,al
 	mov     ax,flm_dir
-	mov     [ebp].ddir,ax
+	mov     curObj.ddir,ax
 
-	mov     [ebp].obj_no,edx           ;;;;;
+	mov     curObj.obj_no,edx           ;;;;;
 
-	mov     [ebp].stat,1
+	mov     curObj.stat,1
 
 	jmp     @@out
 
@@ -3693,7 +3677,7 @@ crea_bullet     ENDP
 ;--------------------------------
 ;  shadow direction
 ;--------------------------------
-shadow_dir      PROC
+shadow_dir      PROC   PRIVATE
 
 	movzx   ebx,eye_th              ;
 	add     ebx,96
@@ -3732,7 +3716,7 @@ shadow_dir    ENDP
 ;-----------------------------------
 ;
 ;-----------------------------------
-make_DIRECTION_MAP      PROC
+make_DIRECTION_MAP      PROC   PRIVATE
 
 	mov     MY,0
 @@Y:
@@ -4059,7 +4043,7 @@ make_DIRECTION_MAP      ENDP
 ;
 ;
 ;
-make_COLLISION_MAP      PROC
+make_COLLISION_MAP      PROC   PRIVATE
 
 	mov     MY,0
 @@Y:
@@ -4225,7 +4209,7 @@ make_COLLISION_MAP      ENDP
 ;-----------------------------------
 ;  change map
 ;-----------------------------------
-change_DIRECTION_MAP      PROC
+change_DIRECTION_MAP      PROC   PRIVATE
 
 	mov     MY,0
 	mov	eax,MYS
@@ -4570,7 +4554,7 @@ change_DIRECTION_MAP      ENDP
 ;
 ;
 ;
-change_COLLISION_MAP      PROC
+change_COLLISION_MAP      PROC   PRIVATE
 
 	mov     MY,0
 	mov	eax,MYS
@@ -4754,7 +4738,7 @@ change_COLLISION_MAP      ENDP
 ;---------------------------------------
 ;
 ;---------------------------------------
-draw_noise      PROC
+draw_noise      PROC   PRIVATE
 
 	mov     eax,frames
 	and     eax,3
@@ -4770,7 +4754,7 @@ draw_noise      ENDP
 ;-----------------------
 ; vertical draw
 ;-----------------------
-vline   PROC
+vline   PROC   PRIVATE
 
 	push    ebp
 	push    ecx
@@ -4927,7 +4911,7 @@ vline   ENDP
 ;------------------------------
 ; high detail
 ;------------------------------
-draw_floor      PROC
+draw_floor      PROC   PRIVATE
 
 	mov     dx,SC_INDEX             ;Let's prepare SC_INDEX
 	mov     al,MAP_MASK             ;For the MAP_MASK
@@ -4971,7 +4955,7 @@ draw_floor      ENDP
 ;------------------------------
 ; low detail
 ;------------------------------
-draw_floorL     PROC
+draw_floorL     PROC   PRIVATE
 
 	mov     dx,SC_INDEX             ;Let's prepare SC_INDEX
 	mov     al,MAP_MASK             ;For the MAP_MASK
@@ -5018,7 +5002,7 @@ draw_floorL     ENDP
 ;------------------------------
 ; low detail
 ;------------------------------
-draw_floorLL    PROC
+draw_floorLL    PROC   PRIVATE
 
 	mov     dx,SC_INDEX             ;Let's prepare SC_INDEX
 	mov     al,MAP_MASK             ;For the MAP_MASK
@@ -5066,7 +5050,7 @@ draw_floorLL    ENDP
 ;-----------------------
 ; vertical draw
 ;-----------------------
-vline2  PROC
+vline2  PROC   PRIVATE
 
 	push    ebp
 	push    ecx
@@ -5240,7 +5224,7 @@ vline2  ENDP
 ;------------------------------
 ;
 ;------------------------------
-draw_floor2     PROC
+draw_floor2     PROC   PRIVATE
 
 	cmp     eye_z,128+5
 	jg      @@quit
@@ -5281,7 +5265,7 @@ draw_floor2     ENDP
 ;-----------------------
 ;
 ;-----------------------
-vlinem  PROC
+vlinem  PROC   PRIVATE
 
 	push    ebp
 	push    ecx
@@ -5442,7 +5426,7 @@ vlinem  ENDP
 ;------------------------------
 ;
 ;------------------------------
-draw_map        PROC
+draw_map        PROC   PRIVATE
 
 	mov     dx,SC_INDEX                 ;Let's prepare SC_INDEX
 	mov     al,MAP_MASK                 ;For the MAP_MASK
@@ -5503,7 +5487,7 @@ draw_map        ENDP
 ;--------------------------------------
 ;
 ;--------------------------------------
-mission_load    PROC
+mission_load    PROC   PRIVATE
 
 	mov     eax,offset tilefilename
 	mov     esi,_mission_no
@@ -5621,7 +5605,7 @@ mission_load    ENDP
 ;-------------------------------------
 ;
 ;-------------------------------------
-crea_enemy      PROC
+crea_enemy      PROC   PRIVATE
 
 	mov     target_destruction,0
 
@@ -5680,13 +5664,13 @@ crea_enemy      PROC
 	shl     eax,3
 	add     eax,4
 	shl     eax,16
-	mov     [edi].x_,eax
+	mov     [edi.OBJECT].x_,eax
 
 	mov     eax,ENINFO[ebx+4]
 	shl     eax,3
 	add     eax,4
 	shl     eax,16
-	mov     [edi].y_,eax
+	mov     [edi.OBJECT].y_,eax
 
 	add     edi,OBJWID
 
@@ -5712,13 +5696,13 @@ crea_enemy      PROC
 	shl     eax,3
 	add     eax,4
 	shl     eax,16
-	mov     [edi].x_,eax
+	mov     [edi.OBJECT].x_,eax
 
 	mov     eax,ENINFO[ebx+4]
 	shl     eax,3
 	add     eax,4
 	shl     eax,16
-	mov     [edi].y_,eax
+	mov     [edi.OBJECT].y_,eax
 
 	inc     target_destruction
 
@@ -5781,13 +5765,13 @@ crea_enemy      PROC
 	shl     eax,3
 	add     eax,4
 	shl     eax,16
-	mov     [edi].x_,eax
+	mov     [edi.OBJECT].x_,eax
 
 	mov     eax,ENINFO[ebx+4]
 	shl     eax,3
 	add     eax,4
 	shl     eax,16
-	mov     [edi].y_,eax
+	mov     [edi.OBJECT].y_,eax
 
 	add     edi,OBJWID*2
 @@skip2:
@@ -5806,19 +5790,19 @@ crea_enemy      ENDP
 ;       eax : x
 ;       edx : y
 ;-----------------------------------
-put_en_pos      PROC
+put_en_pos      PROC   PRIVATE
 
 	push    ebp
 
 	mov     ebp,OFFSET obj_table
 	mov     ecx,MAXOBJ
 @@nexto:
-	cmp     [ebp].stat,0
+	cmp     curObj.stat,0
 	jz      @@skip
-	test    [ebp].obj_no,100h
+	test    curObj.obj_no,100h
 	jnz     @@skip
 
-	cmp     [ebp].obj_no,800h
+	cmp     curObj.obj_no,800h
 	jne     @@normal
 
 	cmp     mission_goal_ok,1
@@ -5836,9 +5820,9 @@ put_en_pos      PROC
 @@gogo1:
 	xor     eax,eax
 	xor     edx,edx
-	mov     eax,[ebp].x_
+	mov     eax,curObj.x_
 ;       shr     eax,16
-	mov     edx,[ebp].y_
+	mov     edx,curObj.y_
 ;       shr     edx,16
 	call    world2map
 	sar     eax,16
@@ -5846,7 +5830,7 @@ put_en_pos      PROC
 	add     eax,32
 	add     edx,32
 
-	cmp     [ebp].energy,0
+	cmp     curObj.energy,0
 	jle     SHORT @@dead_
 	mov     bl,9
 	jmp     SHORT @@live_
@@ -5872,15 +5856,15 @@ put_en_pos      PROC
 @@normal:
 	xor     eax,eax
 	xor     edx,edx
-	mov     eax,[ebp].x_
-	mov     edx,[ebp].y_
+	mov     eax,curObj.x_
+	mov     edx,curObj.y_
 	call    world2map
 	sar     eax,16
 	sar     edx,16
 	add     eax,32
 	add     edx,32
 
-	cmp     [ebp].energy,0
+	cmp     curObj.energy,0
 	jle     SHORT @@dead
 	mov     bl,9
 	jmp     SHORT @@live
@@ -5955,7 +5939,7 @@ put_en_pos      ENDP
 ;---------------------------------------
 ;
 ;---------------------------------------
-edge_correction PROC
+edge_correction PROC   PRIVATE
 
 	push    ebp
 
@@ -5966,42 +5950,42 @@ edge_correction PROC
 
 	mov     ecx,MAXOBJ
 @@nexto:
-	cmp     [ebp].stat,0
+	cmp     curObj.stat,0
 	jz      @@3
 
-	and     [ebp].x_,7FFFFFFh
-	and     [ebp].y_,7FFFFFFh
+	and     curObj.x_,7FFFFFFh
+	and     curObj.y_,7FFFFFFh
 
 	cmp     eye_x_,(2048 SHL 16) - (500 SHL 16)
 	jl      @@XB
 @@XA:
-	cmp     [ebp].x_,500 SHL 16
+	cmp     curObj.x_,500 SHL 16
 	jge     @@YY
-	add     [ebp].x_,2048 SHL 16
+	add     curObj.x_,2048 SHL 16
 	jmp     @@YY
 @@XB:
 	cmp     eye_x_,500 SHL 16
 	jge     @@YY
 
-	cmp     [ebp].x_,(2048 SHL 16) - (500 SHL 16)
+	cmp     curObj.x_,(2048 SHL 16) - (500 SHL 16)
 	jl      @@YY
-	sub     [ebp].x_,2048 SHL 16
+	sub     curObj.x_,2048 SHL 16
 
 @@YY:
 	cmp     eye_y_,(2048 SHL 16) - (500 SHL 16)
 	jl      @@YB
 @@YA:
-	cmp     [ebp].y_,500 SHL 16
+	cmp     curObj.y_,500 SHL 16
 	jge     SHORT @@QQ
-	add     [ebp].y_,2048 SHL 16
+	add     curObj.y_,2048 SHL 16
 	jmp     SHORT @@QQ
 @@YB:
 	cmp     eye_y_,500 SHL 16
 	jge     SHORT @@QQ
 
-	cmp     [ebp].y_,(2048 SHL 16) - (500 SHL 16)
+	cmp     curObj.y_,(2048 SHL 16) - (500 SHL 16)
 	jl      @@QQ
-	sub     [ebp].y_,2048 SHL 16
+	sub     curObj.y_,2048 SHL 16
 @@QQ:
 	cmp     holo_stat,0
 	jnz     @@noholo
@@ -6010,30 +5994,30 @@ edge_correction PROC
 	mov     eax,eye_y_
 	mov     holo_y_,eax
 @@noholo:
-	test    [ebp].obj_no,100h
+	test    curObj.obj_no,100h
 	jnz     @@3
 
 	mov     eax,holo_x_
-	sub     eax,[ebp].x_
+	sub     eax,curObj.x_
 	sar     eax,16
 	imul    eax,eax
 
 	mov     ebx,holo_y_
-	sub     ebx,[ebp].y_
+	sub     ebx,curObj.y_
 	sar     ebx,16
 	imul    ebx,ebx
 	add     eax,ebx
 
 	call    FindSqrt_
 
-	mov     [ebp].dis,ax
+	mov     curObj.dis,ax
 
 	mov     eax,holo_x_
-	sub     eax,[ebp].x_
+	sub     eax,curObj.x_
 	sar     eax,16
 
 	mov     ebx,holo_y_
-	sub     ebx,[ebp].y_
+	sub     ebx,curObj.y_
 	sar     ebx,16
 
 	cmp     ebx,0
@@ -6041,18 +6025,18 @@ edge_correction PROC
 @@1:
 	mov     ebx,32767
 	imul    ebx
-	movzx   ebx,[ebp].dis
+	movzx   ebx,curObj.dis
 	idiv    ebx
 	call    FindTheta1
-	mov     [ebp].theta,al
+	mov     curObj.theta,al
 	jmp     SHORT @@3
 @@2:
 	mov     ebx,32767
 	imul    ebx
-	movzx   ebx,[ebp].dis
+	movzx   ebx,curObj.dis
 	idiv    ebx
 	call    FindTheta2
-	mov     [ebp].theta,al
+	mov     curObj.theta,al
 @@3:
 
 	add     ebp,OBJWID
@@ -6151,7 +6135,7 @@ edge_correction ENDP
 ;---------------------------------------
 ;
 ;---------------------------------------
-sprites PROC
+sprites PROC   PRIVATE
 
 	push    ebp
 
@@ -6171,51 +6155,51 @@ sprites PROC
 	mov     ebp,OFFSET obj_table
 	mov     ecx,MAXOBJ
 @@nexto:
-	cmp     [ebp].stat,0
+	cmp     curObj.stat,0
 	jz      @@nnn
-	test    [ebp].obj_no,100h
+	test    curObj.obj_no,100h
 	jnz     @@noR
-	cmp     [ebp].obj_no,800h
+	cmp     curObj.obj_no,800h
 	je      @@nnn
 
 	push    ecx
 
-	mov     al,[ebp].mth            ;
+	mov     al,curObj.mth            ;
 	add     al,64                   ;
-	mov     [ebp].vth,al            ;
+	mov     curObj.vth,al            ;
 
-	movzx   eax,[ebp].xc
+	movzx   eax,curObj.xc
 	shl     eax,16
 	mov     _XC_,eax
-	movzx   eax,[ebp].yc
+	movzx   eax,curObj.yc
 	shl     eax,16
 	mov     _YC_,eax
 
-	mov     eax,[ebp].spr_no
-	mov     esi,[ebp].spr_data
+	mov     eax,curObj.spr_no
+	mov     esi,curObj.spr_data
 	mov     esi,[esi][eax*4]
-	mov     eax,[ebp].x_
-	mov     edx,[ebp].y_
-	movzx   ebx,[ebp].vth
+	mov     eax,curObj.x_
+	mov     edx,curObj.y_
+	movzx   ebx,curObj.vth
 	call    put_shadowR
 
-	movzx   eax,[ebp].xc
+	movzx   eax,curObj.xc
 	shl     eax,16
 	mov     _XC_,eax
-	movzx   eax,[ebp].yc
+	movzx   eax,curObj.yc
 	shl     eax,16
 	mov     _YC_,eax
 
-	mov     eax,[ebp].spr_no
-	mov     esi,[ebp].spr_data
+	mov     eax,curObj.spr_no
+	mov     esi,curObj.spr_data
 	mov     esi,[esi][eax*4]
-	mov     eax,[ebp].x_
-	mov     edx,[ebp].y_
-	movzx   ebx,[ebp].vth
+	mov     eax,curObj.x_
+	mov     edx,curObj.y_
+	movzx   ebx,curObj.vth
 	call    put_sprR
 
-	mov     eax,[ebp].x_
-	mov     edx,[ebp].y_
+	mov     eax,curObj.x_
+	mov     edx,curObj.y_
 	call    draw_floor3
 
 	pop     ecx
@@ -6223,11 +6207,11 @@ sprites PROC
 	jmp     @@nnn
 
 @@noR:
-	mov     eax,[ebp].spr_no
-	mov     esi,[ebp].spr_data
+	mov     eax,curObj.spr_no
+	mov     esi,curObj.spr_data
 	mov     esi,[esi][eax*4]
-	mov     eax,[ebp].x_
-	mov     edx,[ebp].y_
+	mov     eax,curObj.x_
+	mov     edx,curObj.y_
 	push    ecx
 	call    world2eye
 	sar     eax,16
@@ -6272,17 +6256,11 @@ sprites PROC
 
 sprites ENDP
 
-main_menu       PROC
-
-	ret
-
-main_menu       ENDP
-
 ;----------------------------------------
 ;
 ;
 ;----------------------------------------
-key_input       PROC
+key_input       PROC   PRIVATE
 
 	and     AP_stat,BUST
 
@@ -6354,7 +6332,7 @@ key_input       PROC
 	or      AP_stat,SHFT
 	jmp     SHORT @nextk7
 @@shft:
-	and     AP_stat,NOT SHFT
+	and     AP_stat,1111111b ; FIXME: "NOT SHFT"
 
 @nextk7:
 @nextk71:
@@ -6577,7 +6555,7 @@ key_input       ENDP
 ;-------------------------------------
 ;
 ;-------------------------------------
-obj_table_clear PROC
+obj_table_clear PROC   PRIVATE
 
 	mov     edi,OFFSET obj_table
 	xor     eax,eax
@@ -6591,7 +6569,7 @@ obj_table_clear ENDP
 ;-------------------------------------
 ;
 ;-------------------------------------
-weapon_set      PROC
+weapon_set      PROC   PRIVATE
 
 	mov     edi,OFFSET weapon_rounds   ; clear all weapon rounds
 	mov     ecx,11                     ;
@@ -6648,7 +6626,7 @@ weapon_set      ENDP
 ;
 ;
 ;------------------------------------
-weapon_and_money        PROC
+weapon_and_money        PROC   PRIVATE
 
 	mov     esi,0
 @@next1:
@@ -6704,7 +6682,7 @@ weapon_and_money        ENDP
 ;
 ;
 ;-----------------------------------------
-mission_clear_check     PROC
+mission_clear_check     PROC   PRIVATE
 
 	mov     esi,_mission_no
 	dec     esi
@@ -6761,15 +6739,16 @@ mission_clear_check     PROC
 @@skipmessage1:
 
 	xor     ecx,ecx
+
 @@nextobject:
 	mov     ebp,obj_ptr[ecx*4]
 
-	cmp     [ebp].stat,0
+	cmp     curObj.stat,0
 	jle     @@nnn
-	cmp     [ebp].obj_no,800h
+	cmp     curObj.obj_no,800h
 	jne     @@nnn
 
-	mov     al,[ebp].theta
+	mov     al,curObj.theta
 	add     al,128
 	sub     al,d_th
 	cmp     al,0
@@ -7539,7 +7518,7 @@ startASM_       PROC
 	jmp     @frame
 
 	;-------------------
-@fine:  ;
+@fine::  ;
 	;
 	;-------------------
 	; get system ticks
@@ -7582,7 +7561,7 @@ startASM_       PROC
 	jmp     @@restart
 
 	;-------------------
-@fine2: ;  Quit to DOS  ( from main menu )
+@fine2:: ;  Quit to DOS  ( from main menu )
 	;-------------------
 
 	call    keyint_off
@@ -7618,7 +7597,7 @@ startASM_       ENDP
 ;-------------------------------------
 ;
 ;-------------------------------------
-mission_accomplished    PROC
+mission_accomplished    PROC   PRIVATE
 
 	mov     eax,100
 	mov     edx,100
@@ -7709,7 +7688,7 @@ mission_accomplished    ENDP
 ;-------------------------------------
 ;
 ;-------------------------------------
-lost_in_mission PROC
+lost_in_mission PROC   PRIVATE
 
 	mov     eax,100
 	mov     edx,100
@@ -7794,7 +7773,7 @@ lost_in_mission ENDP
 ;-------------------------------------
 ;  PASSWORD CHECK
 ;-------------------------------------
-password        PROC
+password        PROC   PRIVATE
 
 	push    ebx
 	push    ecx
@@ -8031,7 +8010,7 @@ password        ENDP
 ;---------------------------
 ;
 ;---------------------------
-ending  PROC
+ending  PROC   PRIVATE
 
 	call    _MODStopModule          ; stop Last music
 	mov     eax,_SONGptr_           ;
@@ -8134,7 +8113,7 @@ ending  ENDP
 ;--------------------------------------
 ; ax: random number range ( 0 ... N-1 )
 ;--------------------------------------
-rand    PROC
+rand    PROC   PRIVATE
 
 	push    edx
 	push    ebx
@@ -8160,7 +8139,7 @@ rand    ENDP
 ;---------------------------
 ;  RED OUT
 ;---------------------------
-turn2red        PROC
+turn2red        PROC   PRIVATE
 
 	mov     esi,offset PALtmp
 	mov     edi,offset PALtmp2
@@ -8194,7 +8173,7 @@ turn2red        ENDP
 ;---------------------------
 ;  blue OUT
 ;---------------------------
-turn2blue       PROC
+turn2blue       PROC   PRIVATE
 
 	mov     esi,offset PALtmp
 	mov     edi,offset PALtmp2

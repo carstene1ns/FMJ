@@ -6,9 +6,7 @@
 
 	.386
 
-	LOCALS
-
-	include	VGA.INC
+	include	vga.inc
 
 PUBLIC	StartOffset
 PUBLIC	PageOffset
@@ -76,7 +74,7 @@ GAMMA7  label   byte
 font5	label	byte
 include	font5.inc
 
-PCXHDR  label
+PCXHDR	label	byte
 	maker	db 10		;             // PCX이면 항상 10임.
 	version	db 5		;           // PCX 버전.
 	code	db 1		;              // RLE 압축이면 1, 아니면 0.
@@ -105,15 +103,15 @@ extrn	PAL	:byte
 extrn	PALtmp	:byte
 
 pcx_buffer	db	320*240 dup(?)
-erase_flag	db	0
+erase_flag	db	?
 
 cap_buffer	EQU	pcx_buffer
 
-lstart		dd 0
-lstartd		dd 0
-read_plane	db 0
+lstart		dd ?
+lstartd		dd ?
+read_plane	db ?
 
-RMI	RMInfo	<>
+RMI	RMInfo	<?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?>
 
 _BSS	ENDS
 
@@ -145,7 +143,7 @@ vid_mode_	proc
 
 	; Use DMPI call 300h to issue the DOS interrupt 10h
 	mov	edi,OFFSET RMI
-	mov	[edi]._EAX,ebx		; video mode
+	mov	[edi.RMInfo._EAX],ebx	; video mode
 	mov	ax,300h
 	mov	bl,10h			; interrupt 10h
 	mov	bh,0

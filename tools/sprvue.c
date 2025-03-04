@@ -4,6 +4,7 @@
 //
 
 #include <stdio.h>
+#include <ctype.h>
 #include <conio.h>
 #include <malloc.h>
 #include <string.h>
@@ -323,7 +324,6 @@ void PcxView2(Byte *fname)
 void PaletteLoad(void)
 {
     FILE *fp;
-    int  i;
 
     fp = fopen("FMJP.P", "rb");
     fread(FMP1, 768, 1, fp);
@@ -476,7 +476,7 @@ void PutSprF(int sx, int sy, int index, int flag)
 {
     int i, j, sp, tp;
     int Dx, Dy;
-    Byte  data, *buf;
+    Byte *buf;
 
     if(flag == 0)
     {
@@ -504,7 +504,7 @@ void CutSprF(int sx, int sy, int dx, int dy, int index)
 {
     int i, j, sp, tp;
     int size;
-    Byte  data, *buf;
+    Byte *buf;
 
     SprM2[index].ex = (Word)dx;
     SprM2[index].ey = (Word)dy;
@@ -631,7 +631,7 @@ int InputFont(int x, int y)
 // 문자열을 출력한다.
 void DisplayStr(int x, int y, Byte *str)
 {
-    int i, len, idx, chr;
+    int i, len, chr;
 
     len = strlen(str);
     for(i=0; i < len; i++)
@@ -739,7 +739,7 @@ void AdjustWeight(void)
 
 int FMJMenu(void)
 {
-    int i, ret;
+    int i;
 
     if( SuccessFlag != 1 )
     FMJMenuInit();
@@ -1065,8 +1065,6 @@ int BuyWeaponCheck(int idx)
 // 현재 자기가 소유한 물건을 판다.
 void SellWeapon(int idx)
 {
-    int weight, cost;
-
     if(! HostW[idx].ArmsFlag) return;
 
     FMJTotalScore += ArmsCost[idx];
@@ -1104,7 +1102,7 @@ void ShowAllSaveData(void)
 // 지정된 번호의 FMJ 데이타를 보여준다.
 void ShowSaveData(int idx)
 {
-    int i, imsi;
+    int imsi;
     int axis[5] = { 62, 81, 100, 119, 138 };
     Byte num[10];
 
@@ -1205,7 +1203,7 @@ void EnvironUpDown(int old, int new)
 // 환경 변수값을 증가, 감소 시키는 함수.
 void EnvironLeftRight(int bar, int dist)
 {
-    int x, y, idx;
+    int y, idx;
     int axis[3] = { 191, 225, 259 };
 
     y = 39 + (bar * 28);
