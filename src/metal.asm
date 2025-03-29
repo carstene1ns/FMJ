@@ -134,8 +134,6 @@ PUBLIC  Rbound
 PUBLIC  Ubound
 PUBLIC  Dbound
 
-PUBLIC  SIN
-
 PUBLIC  ey1
 PUBLIC  ey2
 
@@ -227,6 +225,8 @@ extrn   tank3_spr_data: dword
 extrn   ttop1_spr_data: dword
 extrn   ttop2_spr_data: dword
 extrn   ttop3_spr_data: dword
+
+extrn   SIN: word
 
 _DATA   ENDS
 
@@ -328,9 +328,6 @@ Lbound          dd      64
 Rbound          dd      319
 Ubound          dd      0
 Dbound          dd      239
-
-SIN     label   word                    ;sine function table
-	include sine.inc                ;
 
 _mission_no     dd   1         ; (1 - 15)
 mission_number  dd   8,10,3,1,12, 11,0,4,14,9, 13,5,7,2,6
@@ -889,8 +886,6 @@ RECORDING       label   byte
 
 _replay dd      ?
 
-SqrTable        dd      3000 dup(?)
-
 _SONGptr_       dd      ?
 
 file_number     db      ?,?,?
@@ -950,6 +945,12 @@ extrn	fli_file_run_: near             ; C register call
 
 extrn   itoa_:          near            ; C std. LIB function
 
+; math.c
+extrn MakeSqrTable:  near
+extrn FindSqrt_:     near
+extrn FindTheta1:    near
+extrn FindTheta2:    near
+
 ;--------------------;-------------------------------------------------------
 ;  table of routine  ;
 ;--------------------;
@@ -980,166 +981,6 @@ set_border Macro color
        mov  al,color
        out  dx,al
        EndM
-
-;-------------------------------------------
-;
-;-------------------------------------------
-MakeSqrTable    PROC   PRIVATE
-
-	mov     ecx,0
-@@next:
-	mov     eax,ecx
-	mov     ebx,ecx
-	mul     ebx
-	mov     SqrTable[ecx*4],eax
-	inc     ecx
-	cmp     ecx,3000
-	jb      SHORT @@next
-
-	ret
-
-MakeSqrTable    ENDP
-
-;-------------------------------
-;
-;-------------------------------
-FindSqrt_       proc   PRIVATE
-
-	push    ebx
-	push    edx
-	push    esi
-	push    edi
-
-	mov     edx,1500
-	mov     esi,0
-	mov     edi,2999
-@@sss:
-	cmp     eax,SqrTable[edx*4]
-	je      SHORT @@out
-	ja      SHORT @@aaa
-	jb      SHORT @@bbb
-@@aaa:
-	mov     esi,edx
-	mov     ebx,edi
-	sub     ebx,esi
-	shr     ebx,1
-	jz      SHORT @@out
-	add     edx,ebx
-
-	jmp     SHORT @@sss
-@@bbb:
-	mov     edi,edx
-	mov     ebx,edi
-	sub     ebx,esi
-	shr     ebx,1
-	jz      SHORT @@out
-	sub     edx,ebx
-
-	jmp     SHORT @@sss
-@@out:
-	mov     eax,edx
-
-	pop     edi
-	pop     esi
-	pop     edx
-	pop     ebx
-
-	ret
-
-FindSqrt_       endp
-
-;-----------------------------------------
-;
-;-----------------------------------------
-FindTheta1      proc   PRIVATE
-
-	push    ebx
-	push    edx
-	push    esi
-	push    edi
-
-	mov     edx,64
-	mov     esi,0
-	mov     edi,127
-@@sss:
-	cmp     ax,SIN[edx*2+64*2]
-	je      SHORT @@out
-	jl      SHORT @@aaa
-	jg      SHORT @@bbb
-@@aaa:
-	mov     esi,edx
-	mov     ebx,edi
-	sub     ebx,esi
-	shr     ebx,1
-	jz      SHORT @@out
-	add     edx,ebx
-
-	jmp     SHORT @@sss
-@@bbb:
-	mov     edi,edx
-	mov     ebx,edi
-	sub     ebx,esi
-	shr     ebx,1
-	jz      SHORT @@out
-	sub     edx,ebx
-
-	jmp     SHORT @@sss
-@@out:
-	mov     eax,edx
-
-	pop     edi
-	pop     esi
-	pop     edx
-	pop     ebx
-
-	ret
-
-FindTheta1      endp
-
-FindTheta2      proc   PRIVATE
-
-	push    ebx
-	push    edx
-	push    esi
-	push    edi
-
-	mov     edx,192
-	mov     esi,128
-	mov     edi,255
-@@sss:
-	cmp     ax,SIN[edx*2+64*2]
-	je      SHORT @@out
-	jg      SHORT @@aaa
-	jl      SHORT @@bbb
-@@aaa:
-	mov     esi,edx
-	mov     ebx,edi
-	sub     ebx,esi
-	shr     ebx,1
-	jz      SHORT @@out
-	add     edx,ebx
-
-	jmp     SHORT @@sss
-@@bbb:
-	mov     edi,edx
-	mov     ebx,edi
-	sub     ebx,esi
-	shr     ebx,1
-	jz      SHORT @@out
-	sub     edx,ebx
-
-	jmp     SHORT @@sss
-@@out:
-	mov     eax,edx
-
-	pop     edi
-	pop     esi
-	pop     edx
-	pop     ebx
-
-	ret
-
-FindTheta2      endp
 
 ;------------------------------------------
 ;  eax :
