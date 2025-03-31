@@ -15,7 +15,7 @@ add_executable(FMJ
 	src/fli.c
 	src/fmj.c
 	src/fmjmenu.c
-	src/grplib.asm
+	src/grplib.c
 	src/metal.asm
 	src/modload.c
 	src/sprite.asm)
