@@ -3,9 +3,7 @@ _DATA	SEGMENT	PUBLIC DWORD USE32 'DATA'
 extrn	StartOffset	: dword
 extrn	PageOffset	: dword
 extrn	map_mask	: byte
-extrn	GAMMA           : dword
 extrn	gammano         : dword
-extrn	pcxfilename     : byte
 
 _DATA	ENDS
 
@@ -36,7 +34,6 @@ extrn	load_put_PCX    :near
 extrn	load_put_PCXX   :near
 extrn	put_pic   	:near
 extrn	decoding_PCX    :near
-extrn	put_ch       	:near
 extrn	put_string      :near
 
 _TEXT   ENDS

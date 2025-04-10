@@ -188,6 +188,9 @@ PUBLIC  _XC_
 PUBLIC  _YC_
 ;PUBLIC  _SONGptr_
 
+PUBLIC	GAMMA
+PUBLIC	font5
+
 	include grplib.ash              ; graphics lib. header file
 
 _DATA   SEGMENT PUBLIC USE32 DWORD 'DATA'
@@ -737,6 +740,32 @@ passinputX      dd      0
 passon          dd      0
 passtable       label   byte
 	include pass.inc
+
+GAMMA   label   dword                   ;GAMMA correction table
+	dd      offset GAMMA0, offset GAMMA1, offset GAMMA2, offset GAMMA3
+	dd      offset GAMMA4, offset GAMMA5, offset GAMMA6, offset GAMMA7
+
+GAMMA0  label   byte
+	include gamma10.dat
+GAMMA1  label   byte
+	include gamma11.dat
+GAMMA2  label   byte
+	include gamma12.dat
+GAMMA3  label   byte
+	include gamma13.dat
+GAMMA4  label   byte
+	include gamma14.dat
+GAMMA5  label   byte
+	include gamma15.dat
+GAMMA6  label   byte
+	include gamma18.dat
+GAMMA7  label   byte
+	include gamma23.dat
+
+font5	label	byte
+	include	font5.inc
+
+pcxfilename	db	"test0000.pcx",0
 
 _DATA   ENDS
 
@@ -6451,6 +6480,7 @@ key_input       PROC   PRIVATE
 	jmp     @@rename
 
 @@noexit:
+	mov     eax,OFFSET pcxfilename
 	call    decoding_PCX
 
 	pop     ecx
