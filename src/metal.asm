@@ -189,6 +189,7 @@ PUBLIC  _YC_
 ;PUBLIC  _SONGptr_
 
 	include grplib.ash              ; graphics lib. header file
+	include keyboard.ash
 
 _DATA   SEGMENT PUBLIC USE32 DWORD 'DATA'
 
@@ -819,12 +820,6 @@ fps     db      ?, ?    ; frames per second
 int09seg        dw      ?
 int09off        dd      ?
 
-key_hit         db      ?
-extended_key    db      ?
-keyboard        db      128 dup (?)
-key_edge        db      128 dup (?)
-key_string	db	4 dup (?)
-
 PALtmp  db      768 dup(?)
 PALtmp2 db      768 dup(?)
 
@@ -1288,134 +1283,6 @@ init_map        PROC   PRIVATE
 
 init_map        ENDP
 
-;=================================================
-;-------------------------------------------------
-; save orignal key int. handler & set new handler
-;-------------------------------------------------
-keyint_on       PROC   PRIVATE
-
-	; key-intr. handler 09h
-	push    es                     ; save es
-	mov     ax,3509h               ; get interrupt vector ah = 35h
-	int     21h                    ; al = int No.
-	mov     ax,es                  ; ret  es:ebx
-	mov     int09seg,ax            ; get original int. vector
-	mov     int09off,ebx           ; and store
-	pop     es
-
-	push    ds                     ; save ds reg.
-	mov     ax,2509h               ; set interrupt vector ah = 25h
-	mov     edx,offset newint09    ; ds:edx  =  cs:eip
-	mov     bx,cs                  ; al = int No.
-	mov     ds,bx                  ; set new int. handler
-	int     21h                    ;
-	pop     ds
-
-	ret
-keyint_on       ENDP
-
-;-----------------------------------
-;  restore original key-int. vector
-;-----------------------------------
-keyint_off      PROC   PRIVATE
-
-	mov     ax,2509h               ; set int. vector ah = 25h
-	mov     edx,int09off           ; ds:edx
-	push    ds                     ;
-	mov     bx,int09seg            ;
-	mov     ds,bx
-	int     21h
-	pop     ds
-
-	ret
-
-keyint_off      ENDP
-
-clear_key_buffer        PROC   PRIVATE
-
-	mov     edi,OFFSET keyboard
-	mov     ecx,(128+128)/4 + 1
-	xor     eax,eax
-	cld
-	rep     stosd
-	mov     key_hit,0
-
-	ret
-
-clear_key_buffer        ENDP
-
-
-;---------------------------
-; key-interrupt handler
-;---------------------------
-newint09        PROC    far   PRIVATE
-
-	push    es
-	push    eax                    ; save used reg.
-	push    ebx                    ;
-
-	sti
-
-	mov     bx,DGROUP              ; es = dgroup
-	mov     es,bx                  ;
-
-	in      al,60h                 ; read pressed key
-	cmp     al,127                 ; from I/O port 60h
-	ja      @up
-
-	xor     ebx,ebx                ; which key?
-	and     al,127                 ;
-
-	cmp     ES:extended_key,1
-	jne     @@nochk
-	mov     ES:extended_key,0
-	cmp     al,2Ah                 ; Left Shift
-	je      @eoi
-	cmp     al,36h                 ; Right Shift
-	je      @eoi
-@@nochk:
-
-	mov     es:key_hit,al          ;
-	mov     bl,al                  ; Don't forget to remember
-	cmp     es:keyboard[ebx],0     ; es segment overriding
-	jne     SHORT @keys            ; data acsessed in int. handler
-	mov     es:key_edge[ebx],1     ; needs ES segment overriding
-@keys:                                 ; under DOS/4G FLAT model
-	mov     es:keyboard[ebx],1
-	jmp     SHORT @eoi
-@up:
-	cmp     al,0E0h
-	jne     SHORT @normal
-	mov     es:extended_key,1
-	jmp     SHORT @eoi
-@normal:
-	mov     es:key_hit,0          ;
-	xor     ebx,ebx
-	and     al,127
-
-	cmp     ES:extended_key,1
-	jne     @@nochkb
-	mov     ES:extended_key,0
-	cmp     al,2Ah                 ; Left Shift
-	je      @eoi
-	cmp     al,36h                 ; Right Shift
-	je      @eoi
-@@nochkb:
-
-	mov     bl,al
-	mov     es:keyboard[ebx],0     ;
-
-@eoi:
-	mov     al,20h                 ; EOI to 8259-1
-	out     20h,al                 ; (interrupt controller)
-
-	pop     ebx                    ;
-	pop     eax
-	pop     es
-
-	iretd
-
-newint09        ENDP
 ;============================================================================
 ;------------------------------------
 ;
