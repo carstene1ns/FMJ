@@ -18,7 +18,8 @@ add_executable(FMJ
 	src/grplib.asm
 	src/metal.asm
 	src/modload.c
-	src/sprite.asm)
+	src/sprite.asm
+	src/keyboard.c)
 target_include_directories(FMJ PRIVATE inc)
 target_compile_options(FMJ PRIVATE
 	# c99, flat memory model, optimizations
