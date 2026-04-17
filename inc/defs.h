@@ -4,9 +4,21 @@
 
 //= Typedef ==========================================================
 
+#if WITH_SDL
+
+#include <stdint.h>
+
+typedef uint8_t  Byte;
+typedef uint16_t Word;
+typedef uint32_t DWord;
+
+#else
+
 typedef unsigned char  Byte;
 typedef unsigned short Word;
 typedef unsigned int   DWord;
+
+#endif
 
 //- PCX Header -
 typedef struct {

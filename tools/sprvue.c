@@ -5,12 +5,13 @@
 
 #include <stdio.h>
 #include <ctype.h>
-#include <conio.h>
 #include <malloc.h>
 #include <string.h>
 #include <stdlib.h>
-#include <dos.h>
-#include <mem.h>
+#include <assert.h>
+
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
 
 #include "defs.h"
 #include "keys.h"
@@ -20,22 +21,21 @@
 #define MENUWEAPNUM     40          // FMJ의 무기 갯수.
 
 //= Function Definition ==============================================
-void ModeChange(int mode);
 int  GetKey(void);
 void SaveRange(int sx, int sy, int ex, int ey, Byte *mem);
 void RestoreRange(int sx, int sy, int ex, int ey, Byte *mem);
-void PcxView(Byte *fname);
+void PcxView(const char *fname);
 void PaletteLoad(void);
 void LoadMenuFont(void);
 void LoadMenuWeap(void);
 void SprFW(int sx, int sy, int index, int flag);
 void PutSprF(int sx, int sy, int index, int flag);
-void FMJMainMenuRestore(Byte *fmjpal);
+void FMJMainMenuRestore(SDL_Color *fmjpal);
 void FillEnvironBar(int x, int y, int dist);
 void ChangeEnvironBar(int idx, int flag);
 void DrawCursor(int x, int y);
 int  InputFont(int x, int y);
-void DisplayStr(int x, int y, Byte *str);
+void DisplayStr(int x, int y, const char *str);
 void ShowWeapon(int idx);
 void ShowScore(int idx);
 void AdjustWeight(void);
@@ -65,17 +65,23 @@ void Finality(void);
 
 //= Data =============================================================
 
-Byte   *VRam = (Byte *)0xA0000;       // 비디오 램.
+static SDL_Window *window = NULL;
+static SDL_Surface *screen = NULL;
+
+#define WINDOW_WIDTH 320
+#define WINDOW_HEIGHT 200
+
+#define VRam ((Byte *)screen->pixels)// 비디오 램.
 Byte   *VRam2;                       // Pcx그림 저장 장소(320 * 200).
 PCXHDR PcxHead;                       // Pcx 구조체 정의.
-Byte   FMP1[768], FMP2[768];          // FMJ Menu 팔레트.
+SDL_Color FMP1[256], FMP2[256];       // FMJ Menu 팔레트.
 Byte   *PcxMem;                       // Pcx그림 저장 장소(320 * 200).
 Word   CordTable[200];                // Y의 좌표값들.
 short  MenuNewBar, MenuOldBar;
 Word   MenuAxis[4] = { 46, 74, 102, 130 };
 Word   CommFlag;
 int    EnvironSet[5] = { 0, 0, 0, 0, 0 }; // 임시 FMJ 환경값.
-Byte   LoadFileName[20];
+char   LoadFileName[20];
 int    FirstMission;                 // 처음 임무인가?
 
 SpriteMem  SprM[MENUFONTNUM];        // 스프라이트 저장 구조체 정의.
@@ -122,63 +128,141 @@ int PLUSMINUS[5] = {1, 4, 1, 8, 8};           // 환경 설정 변경의 차이.
 int MAXVALUE[5] = {2, 64, 7, 255, 255};
 //= Code =============================================================
 
-//- Base Code ----------------------------------------------
+// stub
+char *itoa(int value, char *str, int base) {
+	assert(base == 10);
 
-// 화면을 전환한다.
-void ModeChange(int mode)
-{
-    union REGS r;
+	// slow :/
+	sprintf(str, "%d", value);
 
-    r.h.ah = 0;
-    r.h.al = mode;
-    int386(0x10, &r, &r);
+	return str;
 }
 
+// init
+bool initSDL() {
+	if(!SDL_Init(SDL_INIT_VIDEO)) {
+		SDL_Log("Cannot initialize SDL video");
+		return false;
+	}
+	window = SDL_CreateWindow("sprvue", WINDOW_WIDTH * 3, WINDOW_HEIGHT * 3, 0);
+	if (!window) {
+		SDL_Log("Cannot set video mode");
+		return false;
+	}
+	screen = SDL_CreateSurface(WINDOW_WIDTH, WINDOW_HEIGHT, SDL_PIXELFORMAT_INDEX8);
+	if (!screen) {
+		SDL_Log("Cannot allocate screen");
+		return false;
+	}
+	if(screen->pixels == NULL) {
+		SDL_Log("Cannot access screen pixels");
+		return false;
+	}
+	SDL_CreateSurfacePalette(screen);
+	SDL_SetSurfaceBlendMode(screen, SDL_BLENDMODE_BLEND);
+	//SDL_Surface *display = SDL_GetWindowSurface(window);
+	//SDL_SetSurfaceBlendMode(display, SDL_BLENDMODE_BLEND);
+
+	return true;
+}
+
+// deinit
+void deinitSDL() {
+	SDL_DestroySurface(screen);
+	SDL_DestroyWindow(window);
+	SDL_Quit();
+}
+
+// display
+void Flip() {
+	SDL_Surface *display = SDL_GetWindowSurface(window);
+	if (!SDL_BlitSurfaceScaled(screen, NULL, display, NULL, SDL_SCALEMODE_NEAREST)) {
+		SDL_Log("SDL_BlitSurfaceScaled failed: %s\n", SDL_GetError());
+	}
+	SDL_UpdateWindowSurface(window);
+	SDL_ClearSurface(screen, 0, 0, 0, 1);
+}
+
+//- Base Code ----------------------------------------------
+
 // 키를 대기한다.
-int GetKey(void)
-{
+int GetKey(void) {
+	SDL_Event event;
+
+	while (1) {
+		while (SDL_PollEvent(&event)) {
+			if (event.type == SDL_EVENT_QUIT)
+				exit(0);
+			if (event.type == SDL_EVENT_KEY_DOWN) {
+				if(event.key.key == SDLK_RETURN)
+					return ENTER;
+				else if(event.key.key == SDLK_BACKSPACE)
+					return BSPACE;
+				else if(event.key.key == SDLK_ESCAPE)
+					return ESC;
+				else if(event.key.key == SDLK_UP)
+					return UP;
+				else if(event.key.key == SDLK_DOWN)
+					return DOWN;
+				else if(event.key.key == SDLK_LEFT)
+					return LEFT;
+				else if(event.key.key == SDLK_RIGHT)
+					return RIGHT;
+				else
+					return event.key.key; // probably bad
+			}
+		}
+
+		SDL_Delay(10);
+	}
+	/*
     int key;
 
     key = getch();
     // 확장키면 256을 더한다.
     if(key == 0) key = getch() + 256;
 
-    return (key);
+    return (key);*/
 }
 
 // 화면을 밝아지게 한다.
-void FadeIn(Byte *pal)
-{
-    int i, j;
+void FadeIn(SDL_Color *pal) {
+	SDL_Palette *palette = SDL_GetSurfacePalette(screen);
 
-    outp(0x3c8, 0);
-    for(j = 0; j < 64; j += 1)
-    {
-	for(i = 0; i < 768; i += 3)
-	{
-	    outp(0x3c9, (pal[i]   * j) >> 6);
-	    outp(0x3c9, (pal[i+1] * j) >> 6);
-	    outp(0x3c9, (pal[i+2] * j) >> 6);
+	// set palette
+	SDL_SetPaletteColors(palette, pal, 0, 256);
+
+	for(int j = 0; j < 256; j += 4) {
+		// apply alpha
+		SDL_SetSurfaceAlphaMod(screen, j);
+		Flip();
+		SDL_Delay(10);
 	}
-    }
+
+	// fixup
+	SDL_SetSurfaceAlphaMod(screen, 0xFF);
+	Flip();
+
 //    Gamma(pal,BrightAdjust);
 }
 
 // 화면을 어두워지게 한다.
-void FadeOut(Byte *pal)
-{
-    int i, j;
+void FadeOut(SDL_Color *pal) {
+	SDL_Palette *palette = SDL_GetSurfacePalette(screen);
 
-    outp(0x3c8, 0);
-    for(j = 63; j >= 0; j -= 1)
-    {
-	for(i = 0; i < 768; i += 3)
-	{
-	    outp(0x3c9, (pal[i]   * j) >> 6);
-	    outp(0x3c9, (pal[i+1] * j) >> 6);
-	    outp(0x3c9, (pal[i+2] * j) >> 6);
+	// set palette
+	SDL_SetPaletteColors(palette, pal, 0, 256);
+
+	for(int j = 255; j > 0; j -= 4) {
+		// apply alpha
+		SDL_SetSurfaceAlphaMod(screen, j);
+		Flip();
+		SDL_Delay(10);
 	}
-    }
+
+	// fixup
+	SDL_SetSurfaceAlphaMod(screen, 0);
+	Flip();
 }
 
 // 지정된 곳의 장소를 저장한다.
@@ -213,13 +297,14 @@ void RestoreRange(int sx, int sy, int ex, int ey, Byte *mem)
 
 // PCX 화일을 보여준다.
 // 리턴 값 -> 0 : PCX 화일이 아니거나 화일이 없음. 1 : 성공.
-void PcxView(Byte *fname)
+void PcxView(const char *fname)
 {
     FILE *fp;
-    int  rc, si, di, x, y, xsize, ysize;
+    int  rc, si, x, y, xsize, ysize;
     Byte ch, data;
 
     fp = fopen(fname, "rb");
+	if(!fp) perror("PcxView");
 
     fread(&PcxHead, sizeof(PcxHead), 1, fp);
 
@@ -236,7 +321,7 @@ void PcxView(Byte *fname)
     fread(PcxMem, xsize * ysize, 1, fp);
     fclose(fp);
 
-    di = si = x = y = 0;
+    si = x = y = 0;
     while(1)
     {
 	ch = PcxMem[si++];
@@ -266,13 +351,14 @@ void PcxView(Byte *fname)
     }
 }
 
-void PcxView2(Byte *fname)
+void PcxView2(const char *fname)
 {
     FILE *fp;
-    int  rc, si, di, x, y, xsize, ysize;
+    int  rc, si, x, y, xsize, ysize;
     Byte ch, data;
 
     fp = fopen(fname, "rb");
+	if(!fp) perror("PcxView2");
 
     fread(&PcxHead, sizeof(PcxHead), 1, fp);
 
@@ -289,7 +375,7 @@ void PcxView2(Byte *fname)
     fread(PcxMem, xsize * ysize, 1, fp);
     fclose(fp);
 
-    di = si = x = y = 0;
+    si = x = y = 0;
     while(1)
     {
 	ch = PcxMem[si++];
@@ -321,17 +407,41 @@ void PcxView2(Byte *fname)
 
 // Fmj Menu Palette를 로드하여 초기화한다.
 // 리턴값 -> 0 : 화일이 없거나 메모리 할당에 실패함. 1 : 성공.
-void PaletteLoad(void)
-{
-    FILE *fp;
+void PaletteLoad(void) {
+	char buf[768];
 
-    fp = fopen("FMJP.P", "rb");
-    fread(FMP1, 768, 1, fp);
-    fclose(fp);
+	FILE *fp = fopen("FMJP.P", "rb");
+	if(!fp) perror("PaletteLoad");
 
-    fp = fopen("FMJPP.P", "rb");
-    fread(FMP2, 768, 1, fp);
-    fclose(fp);
+	fread(buf, 768, 1, fp);
+	fclose(fp);
+
+	// unpack vga to rgb
+	for(int i = 0, j = 0; i < 768; i += 3, j++)	{
+		FMP1[j].r = (buf[i]   << 2) | (buf[i] >> 4);
+		FMP1[j].g = (buf[i+1] << 2) | (buf[i+1] >> 4);
+		FMP1[j].b = (buf[i+2] << 2) | (buf[i+2] >> 4);
+		FMP1[j].a = 0xFF;
+	}
+
+	SDL_Palette *palette = SDL_GetSurfacePalette(screen);
+	if(!SDL_SetPaletteColors(palette, FMP1, 0, 256)) {
+		SDL_Log("SDL_SetPaletteColors failed: %s\n", SDL_GetError());
+	}
+
+	fp = fopen("FMJPP.P", "rb");
+	if(!fp) perror("PaletteLoad");
+
+	fread(buf, 768, 1, fp);
+	fclose(fp);
+
+	// unpack vga to rgb
+	for(int i = 0, j = 0; i < 768; i += 3, j++)	{
+		FMP2[j].r = (buf[i]   << 2) | (buf[i] >> 4);
+		FMP2[j].g = (buf[i+1] << 2) | (buf[i+1] >> 4);
+		FMP2[j].b = (buf[i+2] << 2) | (buf[i+2] >> 4);
+		FMP2[j].a = 0xFF;
+	}
 }
 
 // 4바이트 압축을 해서 결합을 한 폰트 화일을 로드한다.
@@ -341,6 +451,7 @@ void LoadMenuFont(void)
     int i, j, size, tsize;
 
     fp = fopen("FMJF.P", "rb");
+	if(!fp) perror("LoadMenuFont");
 
     for(i=0; i < MENUFONTNUM; i++)
     {
@@ -361,7 +472,6 @@ void LoadMenuFont(void)
 	fread(SprM[i].PartMem, tsize, 1, fp);
     }
     fclose(fp);
-
 }
 
 // FMJ의 무기를 로드하는 함수.
@@ -371,6 +481,7 @@ void LoadMenuWeap(void)
     int i, j, size, tsize;
 
     fp = fopen("FMJW.P", "rb");
+	if(!fp) perror("LoadMenuWeap");
 
     for(i=0; i < MENUWEAPNUM; i++)
     {
@@ -491,7 +602,7 @@ void PutSprF(int sx, int sy, int index, int flag)
 	{
 		for(i=0; i<Dx; i++)
 		{
-			if(buf[sp]!=0) VRam[tp] = buf[sp];
+			if(buf[sp]!=0) *(VRam + tp) = buf[sp];
 			sp++;
 			tp++;
 		}
@@ -528,7 +639,7 @@ void CutSprF(int sx, int sy, int dx, int dy, int index)
 }
 
 // FMJ 메인 메뉴로 복구한다.
-void FMJMainMenuRestore(Byte *fmjpal)
+void FMJMainMenuRestore(SDL_Color *fmjpal)
 {
     FadeOut(fmjpal);
     PcxView("images/fmja.pcx");
@@ -629,7 +740,7 @@ int InputFont(int x, int y)
 }
 
 // 문자열을 출력한다.
-void DisplayStr(int x, int y, Byte *str)
+void DisplayStr(int x, int y, const char *str)
 {
     int i, len, chr;
 
@@ -649,7 +760,7 @@ void DisplayStr(int x, int y, Byte *str)
 void ShowWeapon(int idx)
 {
     int i, len;
-    Byte num[20];
+    char num[20];
 
     RestoreRange(36, 27, 125, 74, PcxMem);
     SprFW(141, 11, idx, 1);
@@ -686,7 +797,7 @@ void ShowWeapon(int idx)
 void ShowScore(int idx)
 {
     int i, len;
-    Byte num[20];
+    char num[20];
 
     itoa(FMJTotalScore, num, 10);
     len = strlen(num);
@@ -758,7 +869,6 @@ int FMJMenu(void)
     LoadMenuWeap();
 
     MenuNewBar = MenuOldBar = CommFlag = 0;
-    ModeChange(0x13);
 
     switch(SuccessFlag)
     {
@@ -794,7 +904,6 @@ int FMJMenu(void)
     for(i=0; i < MENUFONTNUM; i++) free(SprM[i].PartMem);
     for(i=0; i < MENUWEAPNUM; i++) free(ArmsM[i].WeapMem);
 
-//    ModeChange(0x03);
     return (CommFlag);
 }
 
@@ -935,7 +1044,7 @@ void MissionStart(void)
     SprFW(27 + 28, 75 + 23, MissionNumber + 83, 0);
     FadeIn(FMP2);
 
-    getch();
+    GetKey();
     RestoreRange(24, 75, 24 + 280, 75 + 60, PcxMem);
 //    RestoreRange(24, 75, 27 + 272, 75 + 41, PcxMem);
     ShowScore(0);
@@ -1087,7 +1196,7 @@ void ShowAllSaveData(void)
 {
     int i, imsi;
     int axis[5] = { 62, 81, 100, 119, 138 };
-    Byte num[10];
+    char num[10];
 
     SprFW(81, 62, 30, 0);
     for(i=0; i < SaveFMJCount; i++)
@@ -1104,7 +1213,7 @@ void ShowSaveData(int idx)
 {
     int imsi;
     int axis[5] = { 62, 81, 100, 119, 138 };
-    Byte num[10];
+    char num[10];
 
     imsi = axis[idx] + 4;
     DisplayStr(100, imsi, FSave[idx].FName);
@@ -1275,42 +1384,45 @@ void Finality(void)
     if(CommFlag == 0) FMJMainMenuRestore(FMP1);
 }
 
-void main(void)
-{
-    int i,j,ii,len;
-    Byte num[20];
+int main(int argc, char** argv) {
+	int i,ii,len;
+	char num[20];
 
-    PcxMem = (Byte *)malloc(64000);
-    VRam2 = (Byte *)malloc(64000);
+	if(!initSDL()) return 1;
 
-    //- 좌표 테이블 할당.
-    for(i=0; i < 200; i++) CordTable[i] = i * 320;
+	PcxMem = (Byte *)malloc(64000);
+	VRam2 = (Byte *)malloc(64000);
 
-    PaletteLoad();
+	//- 좌표 테이블 할당.
+	for(i=0; i < 200; i++)
+		CordTable[i] = i * 320;
 
-    ModeChange(0x13);
+	PaletteLoad();
 
 //    PcxView2("images/fmja.pcx");
-    FadeIn(FMP1);
+	FadeIn(FMP1);
 //    CutSprF(0,0,50,50,0);
 //    PutSprF(100,100,0,0);
 
-    LoadMenuFont();
-    LoadMenuWeap();
+	LoadMenuFont();
+	LoadMenuWeap();
 
-    for(i=0;i<99;i++)
-    {
-	SprFW(0,0,i,0);
-	itoa(i, num, 10);
-	len = strlen(num);
-	for(ii=0; ii < len; ii++) SprFW(54 - ((len - ii) << 3), 102, num[ii] - 1, 0);
-	getch();
-	for(j=0;j<64000;j++) VRam[j] = 0;
-    }
+	for(i=0;i<99;i++) {
+		SprFW(0,0,i,0);
+		itoa(i, num, 10);
+		len = strlen(num);
+		for(ii=0; ii < len; ii++)
+			SprFW(54 - ((len - ii) << 3), 102, num[ii] - 1, 0);
+		Flip();
+		GetKey();
+	}
 
-    getch();
-    free(PcxMem);
-    ModeChange(0x03);
+	GetKey();
+	FadeOut(FMP1);
+	free(PcxMem);
+	free(VRam2);
 
+	deinitSDL();
+
+	return 0;
 }
-
